@@ -1,0 +1,32 @@
+name: skillsync_frontend
+description: "Frontend Flutter para SkillSync - Sistema de asignación de personal."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.1
+  shared_preferences: ^2.2.3
+  provider: ^6.1.2
+  fl_chart: ^1.1.1
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - SkillSync_icon.png
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "SkillSync_icon.png"

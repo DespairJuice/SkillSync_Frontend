@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSync - Potenciando Personas, Optimizando Procesos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --info: #1abc9c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .logo span {
+            color: var(--accent);
+        }
+        
+        .logo p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        nav a:hover, nav a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        main {
+            padding: 2rem 0;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        
+        .stat {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+        
+        .modules {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 1024px) {
+            .modules {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .module {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .module-title {
+            font-size: 1.3rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .btn-danger {
+            background-color: var(--accent);
+        }
+        
+        .btn-info {
+            background-color: var(--info);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success);
+        }
+        
+        .badge-warning {
+            background-color: rgba(241, 196, 15, 0.2);
+            color: var(--warning);
+        }
+        
+        .badge-danger {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--accent);
+        }
+        
+        .badge-info {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--secondary);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .skills-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .skill-tag {
+            background-color: var(--light);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .skill-tag i {
+            cursor: pointer;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .close {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .alert-success {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+        
+        .alert-error {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--accent);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--secondary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--secondary);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .assignment-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .assignment-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .assignment-details {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #eee;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--success);
+            border-radius: 4px;
+        }
+        
+        .search-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .search-box {
+            flex: 1;
+        }
+        
+        .filter-select {
+            width: 150px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--dark);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div>
+                        <h1>Skill<span>Sync</span></h1>
+                        <p>Potenciando Personas, Optimizando Procesos</p>
+                    </div>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="#employees"><i class="fas fa-users"></i> Empleados</a></li>
+                        <li><a href="#tasks"><i class="fas fa-tasks"></i> Tareas</a></li>
+                        <li><a href="#assignments"><i class="fas fa-project-diagram"></i> Asignaciones</a></li>
+                        <li><a href="#reports"><i class="fas fa-chart-bar"></i> Reportes</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="alert alert-success" id="successAlert">
+            <i class="fas fa-check-circle"></i> Operación completada con éxito.
+        </div>
+        
+        <div class="alert alert-error" id="errorAlert">
+            <i class="fas fa-exclamation-circle"></i> Ha ocurrido un error. Inténtalo de nuevo.
+        </div>
+        
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Procesando solicitud...</p>
+        </div>
+        
+        <!-- Dashboard -->
+        <section id="dashboard" class="tab-content active">
+            <h2 class="module-title"><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+            
+            <div class="dashboard">
+                <div class="card">
+                    <h3><i class="fas fa-chart-line"></i> Resumen del Sistema</h3>
+                    <p>Sistema inteligente de asignación de personal que optimiza la productividad y reduce tiempos muertos.</p>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value" id="totalEmployees">0</div>
+                            <div class="stat-label">Empleados</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="activeTasks">0</div>
+                            <div class="stat-label">Tareas Activas</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="completionRate">0%</div>
+                            <div class="stat-label">Tasa de Finalización</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-random"></i> Asignaciones Recientes</h3>
+                    <div id="recentAssignments">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No hay asignaciones recientes</p>
+                        </div>
+                    </div>
+                    <button class="btn" id="autoAssignBtn"><i class="fas fa-robot"></i> Asignación Automática</button>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-chart-pie"></i> Métricas de Productividad</h3>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value" id="avgCompletionTime">0</div>
+                            <div class="stat-label">Días promedio</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="idleTimeReduction">0%</div>
+                            <div class="stat-label">Reducción tiempos muertos</div>
+                        </div>
+                    </div>
+                    <button class="btn" id="viewReportsBtn"><i class="fas fa-chart-bar"></i> Ver Reportes Detallados</button>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-bell"></i> Alertas del Sistema</h3>
+                    <div id="systemAlerts">
+                        <div class="empty-state">
+                            <i class="fas fa-bell-slash"></i>
+                            <p>No hay alertas en este momento</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modules">
+                <div class="module">
+                    <div class="module-header">
+                        <h2 class="module-title"><i class="fas fa-users"></i> Gestión de Empleados</h2>
+                        <button class="btn" id="addEmployeeBtn"><i class="fas fa-plus"></i> Agregar Empleado</button>
+                    </div>
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <input type="text" id="employeeSearch" placeholder="Buscar empleados...">
+                        </div>
+                        <select class="filter-select" id="employeeFilter">
+                            <option value="all">Todos</option>
+                            <option value="available">Disponibles</option>
+                            <option value="busy">Ocupados</option>
+                        </select>
+                    </div>
+                    <table id="employeesTable">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Habilidades</th>
+                                <th>Carga Actual</th>
+                                <th>Disponibilidad</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeesList">
+                            <!-- Los empleados se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="module">
+                    <div class="module-header">
+                        <h2 class="module-title"><i class="fas fa-tasks"></i> Gestión de Tareas</h2>
+                        <button class="btn" id="addTaskBtn"><i class="fas fa-plus"></i> Agregar Tarea</button>
+                    </div>
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <input type="text" id="taskSearch" placeholder="Buscar tareas...">
+                        </div>
+                        <select class="filter-select" id="taskFilter">
+                            <option value="all">Todas</option>
+                            <option value="pending">Pendientes</option>
+                            <option value="in-progress">En progreso</option>
+                            <option value="completed">Completadas</option>
+                        </select>
+                    </div>
+                    <table id="tasksTable">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Prioridad</th>
+                                <th>Habilidades Requeridas</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasksList">
+                            <!-- Las tareas se cargarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Asignaciones -->
+        <section id="assignments" class="tab-content">
+            <h2 class="module-title"><i class="fas fa-project-diagram"></i> Gestión de Asignaciones</h2>
+            
+            <div class="module">
+                <div class="module-header">
+                    <h3 class="module-title"><i class="fas fa-list"></i> Asignaciones Activas</h3>
+                    <div>
+                        <button class="btn btn-info" id="optimizeAssignmentsBtn"><i class="fas fa-magic"></i> Optimizar Asignaciones</button>
+                        <button class="btn" id="manualAssignmentBtn"><i class="fas fa-hand-pointer"></i> Asignación Manual</button>
+                    </div>
+                </div>
+                
+                <div id="assignmentsList">
+                    <div class="empty-state">
+                        <i class="fas fa-project-diagram"></i>
+                        <p>No hay asignaciones activas</p>
+                        <button class="btn" id="autoAssignFromEmptyBtn"><i class="fas fa-robot"></i> Realizar Asignación Automática</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module">
+                <h3 class="module-title"><i class="fas fa-history"></i> Historial de Asignaciones</h3>
+                <table id="assignmentsHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Tarea</th>
+                            <th>Fecha Asignación</th>
+                            <th>Fecha Finalización</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assignmentsHistoryList">
+                        <!-- El historial se cargará aquí -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Reportes -->
+        <section id="reports" class="tab-content">
+            <h2 class="module-title"><i class="fas fa-chart-bar"></i> Reportes y Análisis</h2>
+            
+            <div class="dashboard">
+                <div class="card">
+                    <h3><i class="fas fa-user-clock"></i> Utilización de Personal</h3>
+                    <div id="utilizationChart">
+                        <canvas id="utilizationCanvas" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-tasks"></i> Estado de Tareas</h3>
+                    <div id="tasksStatusChart">
+                        <canvas id="tasksStatusCanvas" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="module">
+                <h3 class="module-title"><i class="fas fa-table"></i> Métricas Detalladas</h3>
+                <table id="metricsTable">
+                    <thead>
+                        <tr>
+                            <th>Métrica</th>
+                            <th>Valor</th>
+                            <th>Tendencia</th>
+                            <th>Objetivo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="metricsList">
+                        <tr>
+                            <td>Productividad promedio</td>
+                            <td id="avgProductivity">0%</td>
+                            <td><i class="fas fa-arrow-up text-success"></i></td>
+                            <td>85%</td>
+                        </tr>
+                        <tr>
+                            <td>Tiempo promedio de finalización</td>
+                            <td id="avgCompletionTimeReport">0 días</td>
+                            <td><i class="fas fa-arrow-down text-success"></i></td>
+                            <td>3 días</td>
+                        </tr>
+                        <tr>
+                            <td>Tasa de utilización</td>
+                            <td id="utilizationRate">0%</td>
+                            <td><i class="fas fa-arrow-up text-success"></i></td>
+                            <td>90%</td>
+                        </tr>
+                        <tr>
+                            <td>Reducción de tiempos muertos</td>
+                            <td id="idleReductionReport">0%</td>
+                            <td><i class="fas fa-arrow-up text-success"></i></td>
+                            <td>40%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Modal para agregar/editar empleado -->
+    <div class="modal" id="employeeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="employeeModalTitle">Agregar Nuevo Empleado</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="employeeForm">
+                <div class="form-group">
+                    <label for="employeeName">Nombre completo</label>
+                    <input type="text" id="employeeName" required>
+                </div>
+                <div class="form-group">
+                    <label for="employeeEmail">Correo electrónico</label>
+                    <input type="email" id="employeeEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="employeeSkills">Habilidades</label>
+                    <input type="text" id="employeeSkillsInput" placeholder="Escribe una habilidad y presiona Enter">
+                    <div class="skills-input" id="employeeSkillsContainer">
+                        <!-- Las habilidades se agregarán aquí como tags -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="employeeAvailability">Disponibilidad (%)</label>
+                    <input type="range" id="employeeAvailability" min="0" max="100" value="100">
+                    <span id="availabilityValue">100%</span>
+                </div>
+                <div class="form-group">
+                    <label for="employeeDepartment">Departamento</label>
+                    <select id="employeeDepartment">
+                        <option value="Desarrollo">Desarrollo</option>
+                        <option value="Diseño">Diseño</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Ventas">Ventas</option>
+                        <option value="Soporte">Soporte</option>
+                        <option value="Administración">Administración</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar Empleado</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal para agregar/editar tarea -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="taskModalTitle">Agregar Nueva Tarea</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="taskTitle">Título de la tarea</label>
+                    <input type="text" id="taskTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskDescription">Descripción</label>
+                    <textarea id="taskDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="taskPriority">Prioridad</label>
+                    <select id="taskPriority">
+                        <option value="low">Baja</option>
+                        <option value="medium" selected>Media</option>
+                        <option value="high">Alta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="taskSkills">Habilidades requeridas</label>
+                    <input type="text" id="taskSkillsInput" placeholder="Escribe una habilidad y presiona Enter">
+                    <div class="skills-input" id="taskSkillsContainer">
+                        <!-- Las habilidades se agregarán aquí como tags -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="taskDuration">Duración estimada (días)</label>
+                    <input type="number" id="taskDuration" min="1" value="3">
+                </div>
+                <div class="form-group">
+                    <label for="taskDepartment">Departamento</label>
+                    <select id="taskDepartment">
+                        <option value="Desarrollo">Desarrollo</option>
+                        <option value="Diseño">Diseño</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Ventas">Ventas</option>
+                        <option value="Soporte">Soporte</option>
+                        <option value="Administración">Administración</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar Tarea</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal para asignación manual -->
+    <div class="modal" id="assignmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Asignación Manual de Tarea</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="assignmentForm">
+                <div class="form-group">
+                    <label for="assignmentTask">Seleccionar Tarea</label>
+                    <select id="assignmentTask" required>
+                        <option value="">Selecciona una tarea</option>
+                        <!-- Las tareas se cargarán aquí -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="assignmentEmployee">Seleccionar Empleado</label>
+                    <select id="assignmentEmployee" required>
+                        <option value="">Selecciona un empleado</option>
+                        <!-- Los empleados se cargarán aquí -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="assignmentDeadline">Fecha límite</label>
+                    <input type="date" id="assignmentDeadline" required>
+                </div>
+                <button type="submit" class="btn btn-success"><i class="fas fa-user-check"></i> Asignar Tarea</button>
+            </form>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>SkillSync - Proyecto de Grado - Universidad Central</p>
+            <p>Ingeniería Industrial & Ingeniería de Sistemas - 2025</p>
+        </div>
+    </footer>
+
+    <script>
+        // ========== DATOS Y ESTADO ==========
+        
+        // Datos iniciales del sistema
+        let employees = JSON.parse(localStorage.getItem('skillsync_employees')) || [
+            { 
+                id: 1, 
+                name: "Ana García", 
+                email: "ana.garcia@empresa.com", 
+                skills: ["JavaScript", "React", "UI/UX", "Frontend"], 
+                availability: 80, 
+                workload: 3,
+                department: "Desarrollo"
+            },
+            { 
+                id: 2, 
+                name: "Carlos López", 
+                email: "carlos.lopez@empresa.com", 
+                skills: ["Python", "Análisis de datos", "SQL", "Machine Learning"], 
+                availability: 60, 
+                workload: 5,
+                department: "Desarrollo"
+            },
+            { 
+                id: 3, 
+                name: "María Rodríguez", 
+                email: "maria.rodriguez@empresa.com", 
+                skills: ["Comunicación", "Gestión de proyectos", "Documentación", "Scrum"], 
+                availability: 90, 
+                workload: 2,
+                department: "Administración"
+            },
+            { 
+                id: 4, 
+                name: "Pedro Martínez", 
+                email: "pedro.martinez@empresa.com", 
+                skills: ["Diseño gráfico", "UI/UX", "Figma", "Illustrator"], 
+                availability: 70, 
+                workload: 4,
+                department: "Diseño"
+            }
+        ];
+        
+        let tasks = JSON.parse(localStorage.getItem('skillsync_tasks')) || [
+            { 
+                id: 1, 
+                title: "Desarrollo frontend aplicación", 
+                description: "Crear interfaz de usuario para módulo de reportes", 
+                priority: "high", 
+                skills: ["JavaScript", "React", "UI/UX", "Frontend"], 
+                duration: 5, 
+                status: "pending",
+                department: "Desarrollo"
+            },
+            { 
+                id: 2, 
+                title: "Análisis de datos de ventas", 
+                description: "Procesar y analizar datos trimestrales de ventas", 
+                priority: "medium", 
+                skills: ["Python", "Análisis de datos", "SQL"], 
+                duration: 3, 
+                status: "in-progress",
+                department: "Desarrollo"
+            },
+            { 
+                id: 3, 
+                title: "Documentación de procesos", 
+                description: "Actualizar manual de procedimientos operativos", 
+                priority: "low", 
+                skills: ["Comunicación", "Documentación"], 
+                duration: 2, 
+                status: "pending",
+                department: "Administración"
+            },
+            { 
+                id: 4, 
+                title: "Diseño de nueva identidad corporativa", 
+                description: "Crear nueva identidad visual para la empresa", 
+                priority: "medium", 
+                skills: ["Diseño gráfico", "UI/UX", "Figma"], 
+                duration: 7, 
+                status: "pending",
+                department: "Diseño"
+            }
+        ];
+        
+        let assignments = JSON.parse(localStorage.getItem('skillsync_assignments')) || [
+            { 
+                id: 1, 
+                employeeId: 2, 
+                taskId: 2, 
+                date: new Date().toISOString().split('T')[0], 
+                deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                status: "in-progress",
+                progress: 65
+            }
+        ];
+        
+        let assignmentHistory = JSON.parse(localStorage.getItem('skillsync_assignment_history')) || [];
+        
+        // Estado de la aplicación
+        let currentEmployeeId = null;
+        let currentTaskId = null;
+        let employeeSkills = [];
+        let taskSkills = [];
+        
+        // ========== FUNCIONES DE UTILIDAD ==========
+        
+        // Guardar datos en localStorage
+        function saveData() {
+            localStorage.setItem('skillsync_employees', JSON.stringify(employees));
+            localStorage.setItem('skillsync_tasks', JSON.stringify(tasks));
+            localStorage.setItem('skillsync_assignments', JSON.stringify(assignments));
+            localStorage.setItem('skillsync_assignment_history', JSON.stringify(assignmentHistory));
+        }
+        
+        // Mostrar alertas
+        function showAlert(alertElement, message = null) {
+            if (message) {
+                alertElement.innerHTML = alertElement.innerHTML.replace(/<i class="[^"]*"><\/i>/, '') + message;
+            }
+            alertElement.style.display = 'block';
+            setTimeout(() => {
+                alertElement.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Mostrar/ocultar loading
+        function showLoading() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loadingIndicator').style.display = 'none';
+        }
+        
+        // Simular operaciones asíncronas
+        function simulateAsyncOperation(callback, delay = 800) {
+            showLoading();
+            setTimeout(() => {
+                callback();
+                hideLoading();
+            }, delay);
+        }
+        
+        // Generar ID único
+        function generateId(collection) {
+            return collection.length > 0 ? Math.max(...collection.map(item => item.id)) + 1 : 1;
+        }
+        
+        // Calcular métricas del sistema
+        function calculateMetrics() {
+            const totalEmployees = employees.length;
+            const activeTasks = tasks.filter(task => task.status !== 'completed').length;
+            const completedTasks = tasks.filter(task => task.status === 'completed').length;
+            const completionRate = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
+            
+            // Calcular tiempo promedio de finalización
+            const completedAssignments = assignmentHistory.filter(a => a.status === 'completed');
+            const avgCompletionTime = completedAssignments.length > 0 
+                ? Math.round(completedAssignments.reduce((sum, a) => sum + a.duration, 0) / completedAssignments.length)
+                : 0;
+            
+            // Calcular reducción de tiempos muertos (simulado)
+            const idleTimeReduction = Math.min(completionRate + 20, 75);
+            
+            // Actualizar elementos del DOM
+            document.getElementById('totalEmployees').textContent = totalEmployees;
+            document.getElementById('activeTasks').textContent = activeTasks;
+            document.getElementById('completionRate').textContent = completionRate + '%';
+            document.getElementById('avgCompletionTime').textContent = avgCompletionTime;
+            document.getElementById('idleTimeReduction').textContent = idleTimeReduction + '%';
+            
+            // Actualizar reportes
+            document.getElementById('avgCompletionTimeReport').textContent = avgCompletionTime + ' días';
+            document.getElementById('idleReductionReport').textContent = idleTimeReduction + '%';
+            
+            // Calcular utilización promedio
+            const utilizationRate = employees.length > 0 
+                ? Math.round(employees.reduce((sum, emp) => sum + emp.availability, 0) / employees.length)
+                : 0;
+            document.getElementById('utilizationRate').textContent = utilizationRate + '%';
+            
+            // Calcular productividad promedio (simulada)
+            const avgProductivity = Math.min(utilizationRate + 15, 95);
+            document.getElementById('avgProductivity').textContent = avgProductivity + '%';
+        }
+        
+        // ========== GESTIÓN DE EMPLEADOS ==========
+        
+        // Renderizar lista de empleados
+        function renderEmployees(filter = 'all', searchTerm = '') {
+            const employeesList = document.getElementById('employeesList');
+            employeesList.innerHTML = '';
+            
+            let filteredEmployees = employees;
+            
+            // Aplicar filtro
+            if (filter === 'available') {
+                filteredEmployees = employees.filter(emp => emp.availability > 50 && emp.workload < 5);
+            } else if (filter === 'busy') {
+                filteredEmployees = employees.filter(emp => emp.availability <= 50 || emp.workload >= 5);
+            }
+            
+            // Aplicar búsqueda
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                filteredEmployees = filteredEmployees.filter(emp => 
+                    emp.name.toLowerCase().includes(term) || 
+                    emp.email.toLowerCase().includes(term) ||
+                    emp.skills.some(skill => skill.toLowerCase().includes(term))
+                );
+            }
+            
+            if (filteredEmployees.length === 0) {
+                employeesList.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fas fa-users"></i>
+                            <p>No se encontraron empleados</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            filteredEmployees.forEach(employee => {
+                const skillsHtml = employee.skills.map(skill => 
+                    `<span class="badge badge-success">${skill}</span>`
+                ).join(' ');
+                
+                const workloadClass = employee.workload < 3 ? 'badge-success' : 
+                                    employee.workload < 5 ? 'badge-warning' : 'badge-danger';
+                
+                const availabilityClass = employee.availability > 70 ? 'badge-success' : 
+                                        employee.availability > 40 ? 'badge-warning' : 'badge-danger';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div><strong>${employee.name}</strong></div>
+                        <div class="text-muted" style="font-size: 0.8rem;">${employee.email}</div>
+                        <div class="badge badge-info">${employee.department}</div>
+                    </td>
+                    <td>${skillsHtml}</td>
+                    <td><span class="badge ${workloadClass}">${employee.workload} tareas</span></td>
+                    <td><span class="badge ${availabilityClass}">${employee.availability}%</span></td>
+                    <td>
+                        <button class="btn" onclick="editEmployee(${employee.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" onclick="deleteEmployee(${employee.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                employeesList.appendChild(row);
+            });
+            
+            calculateMetrics();
+        }
+        
+        // Abrir modal para agregar/editar empleado
+        function openEmployeeModal(employeeId = null) {
+            currentEmployeeId = employeeId;
+            const modal = document.getElementById('employeeModal');
+            const form = document.getElementById('employeeForm');
+            const title = document.getElementById('employeeModalTitle');
+            
+            // Resetear formulario
+            form.reset();
+            employeeSkills = [];
+            document.getElementById('employeeSkillsContainer').innerHTML = '';
+            
+            if (employeeId) {
+                // Modo edición
+                title.textContent = 'Editar Empleado';
+                const employee = employees.find(emp => emp.id === employeeId);
+                
+                if (employee) {
+                    document.getElementById('employeeName').value = employee.name;
+                    document.getElementById('employeeEmail').value = employee.email;
+                    document.getElementById('employeeAvailability').value = employee.availability;
+                    document.getElementById('availabilityValue').textContent = employee.availability + '%';
+                    document.getElementById('employeeDepartment').value = employee.department;
+                    
+                    // Cargar habilidades
+                    employee.skills.forEach(skill => {
+                        addSkillToEmployee(skill);
+                    });
+                }
+            } else {
+                // Modo agregar
+                title.textContent = 'Agregar Nuevo Empleado';
+            }
+            
+            modal.style.display = 'flex';
+        }
+        
+        // Agregar habilidad a empleado
+        function addSkillToEmployee(skill) {
+            if (skill && !employeeSkills.includes(skill)) {
+                employeeSkills.push(skill);
+                const container = document.getElementById('employeeSkillsContainer');
+                const tag = document.createElement('div');
+                tag.className = 'skill-tag';
+                tag.innerHTML = `
+                    ${skill}
+                    <i class="fas fa-times" onclick="removeEmployeeSkill('${skill}')"></i>
+                `;
+                container.appendChild(tag);
+                
+                document.getElementById('employeeSkillsInput').value = '';
+            }
+        }
+        
+        // Eliminar habilidad de empleado
+        function removeEmployeeSkill(skill) {
+            employeeSkills = employeeSkills.filter(s => s !== skill);
+            renderEmployeeSkills();
+        }
+        
+        // Renderizar habilidades del empleado
+        function renderEmployeeSkills() {
+            const container = document.getElementById('employeeSkillsContainer');
+            container.innerHTML = '';
+            
+            employeeSkills.forEach(skill => {
+                const tag = document.createElement('div');
+                tag.className = 'skill-tag';
+                tag.innerHTML = `
+                    ${skill}
+                    <i class="fas fa-times" onclick="removeEmployeeSkill('${skill}')"></i>
+                `;
+                container.appendChild(tag);
+            });
+        }
+        
+        // Guardar empleado (agregar o editar)
+        function saveEmployee(employeeData) {
+            simulateAsyncOperation(() => {
+                if (currentEmployeeId) {
+                    // Editar empleado existente
+                    const index = employees.findIndex(emp => emp.id === currentEmployeeId);
+                    if (index !== -1) {
+                        employees[index] = {
+                            ...employees[index],
+                            ...employeeData,
+                            skills: employeeSkills
+                        };
+                    }
+                } else {
+                    // Agregar nuevo empleado
+                    const newEmployee = {
+                        id: generateId(employees),
+                        ...employeeData,
+                        skills: employeeSkills,
+                        workload: 0
+                    };
+                    employees.push(newEmployee);
+                }
+                
+                saveData();
+                renderEmployees();
+                document.getElementById('employeeModal').style.display = 'none';
+                showAlert(document.getElementById('successAlert'), 
+                    `Empleado ${currentEmployeeId ? 'actualizado' : 'agregado'} correctamente.`);
+            });
+        }
+        
+        // Eliminar empleado
+        function deleteEmployee(id) {
+            if (confirm('¿Estás seguro de que deseas eliminar este empleado?')) {
+                simulateAsyncOperation(() => {
+                    employees = employees.filter(emp => emp.id !== id);
+                    saveData();
+                    renderEmployees();
+                    showAlert(document.getElementById('successAlert'), 'Empleado eliminado correctamente.');
+                });
+            }
+        }
+        
+        // ========== GESTIÓN DE TAREAS ==========
+        
+        // Renderizar lista de tareas
+        function renderTasks(filter = 'all', searchTerm = '') {
+            const tasksList = document.getElementById('tasksList');
+            tasksList.innerHTML = '';
+            
+            let filteredTasks = tasks;
+            
+            // Aplicar filtro
+            if (filter !== 'all') {
+                filteredTasks = tasks.filter(task => task.status === filter);
+            }
+            
+            // Aplicar búsqueda
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                filteredTasks = filteredTasks.filter(task => 
+                    task.title.toLowerCase().includes(term) || 
+                    task.description.toLowerCase().includes(term) ||
+                    task.skills.some(skill => skill.toLowerCase().includes(term))
+                );
+            }
+            
+            if (filteredTasks.length === 0) {
+                tasksList.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fas fa-tasks"></i>
+                            <p>No se encontraron tareas</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            filteredTasks.forEach(task => {
+                const priorityClass = {
+                    'low': 'badge-success',
+                    'medium': 'badge-warning',
+                    'high': 'badge-danger'
+                }[task.priority];
+                
+                const priorityText = {
+                    'low': 'Baja',
+                    'medium': 'Media',
+                    'high': 'Alta'
+                }[task.priority];
+                
+                const statusClass = {
+                    'pending': 'badge-warning',
+                    'in-progress': 'badge-info',
+                    'completed': 'badge-success'
+                }[task.status];
+                
+                const statusText = {
+                    'pending': 'Pendiente',
+                    'in-progress': 'En progreso',
+                    'completed': 'Completada'
+                }[task.status];
+                
+                const skillsHtml = task.skills.map(skill => 
+                    `<span class="badge badge-success">${skill}</span>`
+                ).join(' ');
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div><strong>${task.title}</strong></div>
+                        <div class="text-muted" style="font-size: 0.8rem;">${task.description}</div>
+                        <div class="badge badge-info">${task.department}</div>
+                    </td>
+                    <td><span class="badge ${priorityClass}">${priorityText}</span></td>
+                    <td>${skillsHtml}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <button class="btn" onclick="editTask(${task.id})"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" onclick="deleteTask(${task.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tasksList.appendChild(row);
+            });
+            
+            calculateMetrics();
+        }
+        
+        // Abrir modal para agregar/editar tarea
+        function openTaskModal(taskId = null) {
+            currentTaskId = taskId;
+            const modal = document.getElementById('taskModal');
+            const form = document.getElementById('taskForm');
+            const title = document.getElementById('taskModalTitle');
+            
+            // Resetear formulario
+            form.reset();
+            taskSkills = [];
+            document.getElementById('taskSkillsContainer').innerHTML = '';
+            
+            if (taskId) {
+                // Modo edición
+                title.textContent = 'Editar Tarea';
+                const task = tasks.find(t => t.id === taskId);
+                
+                if (task) {
+                    document.getElementById('taskTitle').value = task.title;
+                    document.getElementById('taskDescription').value = task.description;
+                    document.getElementById('taskPriority').value = task.priority;
+                    document.getElementById('taskDuration').value = task.duration;
+                    document.getElementById('taskDepartment').value = task.department;
+                    
+                    // Cargar habilidades
+                    task.skills.forEach(skill => {
+                        addSkillToTask(skill);
+                    });
+                }
+            } else {
+                // Modo agregar
+                title.textContent = 'Agregar Nueva Tarea';
+            }
+            
+            modal.style.display = 'flex';
+        }
+        
+        // Agregar habilidad a tarea
+        function addSkillToTask(skill) {
+            if (skill && !taskSkills.includes(skill)) {
+                taskSkills.push(skill);
+                const container = document.getElementById('taskSkillsContainer');
+                const tag = document.createElement('div');
+                tag.className = 'skill-tag';
+                tag.innerHTML = `
+                    ${skill}
+                    <i class="fas fa-times" onclick="removeTaskSkill('${skill}')"></i>
+                `;
+                container.appendChild(tag);
+                
+                document.getElementById('taskSkillsInput').value = '';
+            }
+        }
+        
+        // Eliminar habilidad de tarea
+        function removeTaskSkill(skill) {
+            taskSkills = taskSkills.filter(s => s !== skill);
+            renderTaskSkills();
+        }
+        
+        // Renderizar habilidades de la tarea
+        function renderTaskSkills() {
+            const container = document.getElementById('taskSkillsContainer');
+            container.innerHTML = '';
+            
+            taskSkills.forEach(skill => {
+                const tag = document.createElement('div');
+                tag.className = 'skill-tag';
+                tag.innerHTML = `
+                    ${skill}
+                    <i class="fas fa-times" onclick="removeTaskSkill('${skill}')"></i>
+                `;
+                container.appendChild(tag);
+            });
+        }
+        
+        // Guardar tarea (agregar o editar)
+        function saveTask(taskData) {
+            simulateAsyncOperation(() => {
+                if (currentTaskId) {
+                    // Editar tarea existente
+                    const index = tasks.findIndex(t => t.id === currentTaskId);
+                    if (index !== -1) {
+                        tasks[index] = {
+                            ...tasks[index],
+                            ...taskData,
+                            skills: taskSkills
+                        };
+                    }
+                } else {
+                    // Agregar nueva tarea
+                    const newTask = {
+                        id: generateId(tasks),
+                        ...taskData,
+                        skills: taskSkills,
+                        status: 'pending'
+                    };
+                    tasks.push(newTask);
+                }
+                
+                saveData();
+                renderTasks();
+                document.getElementById('taskModal').style.display = 'none';
+                showAlert(document.getElementById('successAlert'), 
+                    `Tarea ${currentTaskId ? 'actualizada' : 'agregada'} correctamente.`);
+            });
+        }
+        
+        // Eliminar tarea
+        function deleteTask(id) {
+            if (confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
+                simulateAsyncOperation(() => {
+                    tasks = tasks.filter(task => task.id !== id);
+                    saveData();
+                    renderTasks();
+                    showAlert(document.getElementById('successAlert'), 'Tarea eliminada correctamente.');
+                });
+            }
+        }
+        
+        // ========== ASIGNACIÓN AUTOMÁTICA ==========
+        
+        // Algoritmo de asignación automática
+        function autoAssignTasks() {
+            simulateAsyncOperation(() => {
+                const pendingTasks = tasks.filter(task => task.status === 'pending');
+                const availableEmployees = employees.filter(emp => 
+                    emp.availability > 30 && emp.workload < 7
+                );
+                
+                let newAssignments = 0;
+                
+                pendingTasks.forEach(task => {
+                    // Encontrar empleados adecuados para la tarea
+                    const suitableEmployees = availableEmployees.filter(emp => {
+                        // Verificar departamento
+                        if (emp.department !== task.department) return false;
+                        
+                        // Verificar habilidades
+                        const commonSkills = emp.skills.filter(skill => 
+                            task.skills.map(s => s.toLowerCase()).includes(skill.toLowerCase())
+                        );
+                        
+                        // El empleado debe tener al menos el 50% de las habilidades requeridas
+                        const skillMatchRatio = commonSkills.length / task.skills.length;
+                        return skillMatchRatio >= 0.5 && emp.workload < 5;
+                    });
+                    
+                    if (suitableEmployees.length > 0) {
+                        // Ordenar por: 1) Coincidencia de habilidades, 2) Carga de trabajo, 3) Disponibilidad
+                        suitableEmployees.sort((a, b) => {
+                            const aSkillsMatch = a.skills.filter(s => 
+                                task.skills.map(t => t.toLowerCase()).includes(s.toLowerCase())
+                            ).length;
+                            const bSkillsMatch = b.skills.filter(s => 
+                                task.skills.map(t => t.toLowerCase()).includes(s.toLowerCase())
+                            ).length;
+                            
+                            if (aSkillsMatch !== bSkillsMatch) {
+                                return bSkillsMatch - aSkillsMatch;
+                            }
+                            
+                            if (a.workload !== b.workload) {
+                                return a.workload - b.workload;
+                            }
+                            
+                            return b.availability - a.availability;
+                        });
+                        
+                        const assignedEmployee = suitableEmployees[0];
+                        
+                        // Crear asignación
+                        const newAssignment = {
+                            id: generateId(assignments),
+                            employeeId: assignedEmployee.id,
+                            taskId: task.id,
+                            date: new Date().toISOString().split('T')[0],
+                            deadline: new Date(Date.now() + task.duration * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                            status: 'in-progress',
+                            progress: 0
+                        };
+                        
+                        assignments.push(newAssignment);
+                        
+                        // Actualizar carga de trabajo del empleado
+                        assignedEmployee.workload += 1;
+                        
+                        // Actualizar estado de la tarea
+                        task.status = 'in-progress';
+                        
+                        newAssignments++;
+                    }
+                });
+                
+                saveData();
+                renderEmployees();
+                renderTasks();
+                renderAssignments();
+                
+                if (newAssignments > 0) {
+                    showAlert(document.getElementById('successAlert'), 
+                        `Se han realizado ${newAssignments} nuevas asignaciones automáticas.`);
+                } else {
+                    showAlert(document.getElementById('errorAlert'), 
+                        'No se pudieron realizar nuevas asignaciones automáticas. Revise la disponibilidad de empleados.');
+                }
+            }, 1500);
+        }
+        
+        // ========== GESTIÓN DE ASIGNACIONES ==========
+        
+        // Renderizar asignaciones activas
+        function renderAssignments() {
+            const assignmentsList = document.getElementById('assignmentsList');
+            
+            if (assignments.length === 0) {
+                assignmentsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-project-diagram"></i>
+                        <p>No hay asignaciones activas</p>
+                        <button class="btn" onclick="autoAssignTasks()"><i class="fas fa-robot"></i> Realizar Asignación Automática</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            assignmentsList.innerHTML = '';
+            
+            assignments.forEach(assignment => {
+                const employee = employees.find(emp => emp.id === assignment.employeeId);
+                const task = tasks.find(t => t.id === assignment.taskId);
+                
+                if (!employee || !task) return;
+                
+                const assignmentCard = document.createElement('div');
+                assignmentCard.className = 'assignment-card';
+                
+                const statusClass = {
+                    'pending': 'badge-warning',
+                    'in-progress': 'badge-info',
+                    'completed': 'badge-success'
+                }[assignment.status];
+                
+                const statusText = {
+                    'pending': 'Pendiente',
+                    'in-progress': 'En progreso',
+                    'completed': 'Completada'
+                }[assignment.status];
+                
+                assignmentCard.innerHTML = `
+                    <div class="assignment-header">
+                        <div class="assignment-title">${task.title}</div>
+                        <span class="badge ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="assignment-details">
+                        <div><strong>Empleado:</strong> ${employee.name}</div>
+                        <div><strong>Departamento:</strong> ${employee.department}</div>
+                        <div><strong>Fecha límite:</strong> ${assignment.deadline}</div>
+                        <div><strong>Progreso:</strong> ${assignment.progress}%</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: ${assignment.progress}%"></div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <button class="btn btn-success" onclick="updateAssignmentProgress(${assignment.id}, 10)"><i class="fas fa-plus"></i> Avanzar</button>
+                        <button class="btn btn-warning" onclick="updateAssignmentProgress(${assignment.id}, -10)"><i class="fas fa-minus"></i> Retroceder</button>
+                        <button class="btn btn-danger" onclick="completeAssignment(${assignment.id})"><i class="fas fa-check"></i> Completar</button>
+                    </div>
+                `;
+                
+                assignmentsList.appendChild(assignmentCard);
+            });
+        }
+        
+        // Actualizar progreso de asignación
+        function updateAssignmentProgress(assignmentId, change) {
+            const assignment = assignments.find(a => a.id === assignmentId);
+            if (assignment) {
+                assignment.progress = Math.max(0, Math.min(100, assignment.progress + change));
+                
+                if (assignment.progress === 100) {
+                    assignment.status = 'completed';
+                    completeAssignment(assignmentId);
+                } else {
+                    saveData();
+                    renderAssignments();
+                }
+            }
+        }
+        
+        // Completar asignación
+        function completeAssignment(assignmentId) {
+            const assignment = assignments.find(a => a.id === assignmentId);
+            if (assignment) {
+                assignment.status = 'completed';
+                assignment.progress = 100;
+                assignment.completionDate = new Date().toISOString().split('T')[0];
+                
+                // Agregar al historial
+                assignmentHistory.push({
+                    ...assignment,
+                    duration: tasks.find(t => t.id === assignment.taskId)?.duration || 0
+                });
+                
+                // Actualizar carga de trabajo del empleado
+                const employee = employees.find(emp => emp.id === assignment.employeeId);
+                if (employee) {
+                    employee.workload = Math.max(0, employee.workload - 1);
+                }
+                
+                // Actualizar estado de la tarea
+                const task = tasks.find(t => t.id === assignment.taskId);
+                if (task) {
+                    task.status = 'completed';
+                }
+                
+                // Eliminar de asignaciones activas
+                assignments = assignments.filter(a => a.id !== assignmentId);
+                
+                saveData();
+                renderEmployees();
+                renderTasks();
+                renderAssignments();
+                renderAssignmentHistory();
+                
+                showAlert(document.getElementById('successAlert'), 'Tarea completada correctamente.');
+            }
+        }
+        
+        // Renderizar historial de asignaciones
+        function renderAssignmentHistory() {
+            const historyList = document.getElementById('assignmentsHistoryList');
+            historyList.innerHTML = '';
+            
+            if (assignmentHistory.length === 0) {
+                historyList.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <p>No hay historial de asignaciones</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Mostrar las 10 más recientes
+            const recentHistory = assignmentHistory.slice(-10).reverse();
+            
+            recentHistory.forEach(assignment => {
+                const employee = employees.find(emp => emp.id === assignment.employeeId);
+                const task = tasks.find(t => t.id === assignment.taskId);
+                
+                if (!employee || !task) return;
+                
+                const statusClass = {
+                    'pending': 'badge-warning',
+                    'in-progress': 'badge-info',
+                    'completed': 'badge-success'
+                }[assignment.status];
+                
+                const statusText = {
+                    'pending': 'Pendiente',
+                    'in-progress': 'En progreso',
+                    'completed': 'Completada'
+                }[assignment.status];
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${employee.name}</td>
+                    <td>${task.title}</td>
+                    <td>${assignment.date}</td>
+                    <td>${assignment.completionDate || '--'}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                `;
+                historyList.appendChild(row);
+            });
+        }
+        
+        // ========== NAVEGACIÓN Y EVENT LISTENERS ==========
+        
+        // Inicializar la aplicación
+        function initApp() {
+            // Renderizar datos iniciales
+            renderEmployees();
+            renderTasks();
+            renderAssignments();
+            renderAssignmentHistory();
+            calculateMetrics();
+            
+            // Configurar event listeners para habilidades
+            document.getElementById('employeeSkillsInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addSkillToEmployee(this.value.trim());
+                }
+            });
+            
+            document.getElementById('taskSkillsInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addSkillToTask(this.value.trim());
+                }
+            });
+            
+            // Configurar event listeners para búsquedas y filtros
+            document.getElementById('employeeSearch').addEventListener('input', function() {
+                const filter = document.getElementById('employeeFilter').value;
+                renderEmployees(filter, this.value);
+            });
+            
+            document.getElementById('employeeFilter').addEventListener('change', function() {
+                const search = document.getElementById('employeeSearch').value;
+                renderEmployees(this.value, search);
+            });
+            
+            document.getElementById('taskSearch').addEventListener('input', function() {
+                const filter = document.getElementById('taskFilter').value;
+                renderTasks(filter, this.value);
+            });
+            
+            document.getElementById('taskFilter').addEventListener('change', function() {
+                const search = document.getElementById('taskSearch').value;
+                renderTasks(this.value, search);
+            });
+            
+            // Configurar event listeners para modales
+            document.getElementById('addEmployeeBtn').addEventListener('click', () => openEmployeeModal());
+            document.getElementById('addTaskBtn').addEventListener('click', () => openTaskModal());
+            document.getElementById('autoAssignBtn').addEventListener('click', autoAssignTasks);
+            document.getElementById('viewReportsBtn').addEventListener('click', () => {
+                // Cambiar a pestaña de reportes
+                document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                document.getElementById('reports').classList.add('active');
+                
+                // Actualizar navegación
+                document.querySelectorAll('nav a').forEach(link => link.classList.remove('active'));
+                document.querySelector('nav a[href="#reports"]').classList.add('active');
+            });
+            
+            // Configurar formularios
+            document.getElementById('employeeForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = {
+                    name: document.getElementById('employeeName').value,
+                    email: document.getElementById('employeeEmail').value,
+                    availability: parseInt(document.getElementById('employeeAvailability').value),
+                    department: document.getElementById('employeeDepartment').value
+                };
+                saveEmployee(formData);
+            });
+            
+            document.getElementById('taskForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = {
+                    title: document.getElementById('taskTitle').value,
+                    description: document.getElementById('taskDescription').value,
+                    priority: document.getElementById('taskPriority').value,
+                    duration: parseInt(document.getElementById('taskDuration').value),
+                    department: document.getElementById('taskDepartment').value
+                };
+                saveTask(formData);
+            });
+            
+            // Configurar controles de rango
+            document.getElementById('employeeAvailability').addEventListener('input', function() {
+                document.getElementById('availabilityValue').textContent = this.value + '%';
+            });
+            
+            // Configurar cierre de modales
+            document.querySelectorAll('.close').forEach(closeBtn => {
+                closeBtn.addEventListener('click', function() {
+                    this.closest('.modal').style.display = 'none';
+                });
+            });
+            
+            // Configurar navegación
+            document.querySelectorAll('nav a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = this.getAttribute('href').substring(1);
+                    
+                    // Actualizar navegación activa
+                    document.querySelectorAll('nav a').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Mostrar contenido correspondiente
+                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+            
+            // Configurar asignación manual
+            document.getElementById('manualAssignmentBtn').addEventListener('click', function() {
+                const modal = document.getElementById('assignmentModal');
+                const taskSelect = document.getElementById('assignmentTask');
+                const employeeSelect = document.getElementById('assignmentEmployee');
+                
+                // Limpiar selects
+                taskSelect.innerHTML = '<option value="">Selecciona una tarea</option>';
+                employeeSelect.innerHTML = '<option value="">Selecciona un empleado</option>';
+                
+                // Llenar tareas pendientes
+                tasks.filter(task => task.status === 'pending').forEach(task => {
+                    const option = document.createElement('option');
+                    option.value = task.id;
+                    option.textContent = task.title;
+                    taskSelect.appendChild(option);
+                });
+                
+                // Llenar empleados disponibles
+                employees.filter(emp => emp.availability > 30 && emp.workload < 7).forEach(emp => {
+                    const option = document.createElement('option');
+                    option.value = emp.id;
+                    option.textContent = `${emp.name} (${emp.department})`;
+                    employeeSelect.appendChild(option);
+                });
+                
+                // Establecer fecha límite por defecto (3 días desde hoy)
+                const defaultDeadline = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+                document.getElementById('assignmentDeadline').value = defaultDeadline.toISOString().split('T')[0];
+                
+                modal.style.display = 'flex';
+            });
+            
+            // Configurar formulario de asignación manual
+            document.getElementById('assignmentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const taskId = parseInt(document.getElementById('assignmentTask').value);
+                const employeeId = parseInt(document.getElementById('assignmentEmployee').value);
+                const deadline = document.getElementById('assignmentDeadline').value;
+                
+                if (!taskId || !employeeId) {
+                    showAlert(document.getElementById('errorAlert'), 'Por favor selecciona una tarea y un empleado.');
+                    return;
+                }
+                
+                simulateAsyncOperation(() => {
+                    // Crear asignación
+                    const newAssignment = {
+                        id: generateId(assignments),
+                        employeeId: employeeId,
+                        taskId: taskId,
+                        date: new Date().toISOString().split('T')[0],
+                        deadline: deadline,
+                        status: 'in-progress',
+                        progress: 0
+                    };
+                    
+                    assignments.push(newAssignment);
+                    
+                    // Actualizar carga de trabajo del empleado
+                    const employee = employees.find(emp => emp.id === employeeId);
+                    if (employee) {
+                        employee.workload += 1;
+                    }
+                    
+                    // Actualizar estado de la tarea
+                    const task = tasks.find(t => t.id === taskId);
+                    if (task) {
+                        task.status = 'in-progress';
+                    }
+                    
+                    saveData();
+                    renderEmployees();
+                    renderTasks();
+                    renderAssignments();
+                    
+                    document.getElementById('assignmentModal').style.display = 'none';
+                    showAlert(document.getElementById('successAlert'), 'Asignación manual realizada correctamente.');
+                });
+            });
+            
+            // Configurar optimización de asignaciones
+            document.getElementById('optimizeAssignmentsBtn').addEventListener('click', function() {
+                simulateAsyncOperation(() => {
+                    // Simular optimización redistribuyendo tareas
+                    let optimizedCount = 0;
+                    
+                    assignments.forEach(assignment => {
+                        const employee = employees.find(emp => emp.id === assignment.employeeId);
+                        const task = tasks.find(t => t.id === assignment.taskId);
+                        
+                        if (employee && task) {
+                            // Verificar si hay un empleado más adecuado
+                            const betterEmployees = employees.filter(emp => 
+                                emp.id !== employee.id &&
+                                emp.department === task.department &&
+                                emp.availability > employee.availability &&
+                                emp.workload < employee.workload &&
+                                emp.skills.filter(s => 
+                                    task.skills.map(t => t.toLowerCase()).includes(s.toLowerCase())
+                                ).length >= employee.skills.filter(s => 
+                                    task.skills.map(t => t.toLowerCase()).includes(s.toLowerCase())
+                                ).length
+                            );
+                            
+                            if (betterEmployees.length > 0) {
+                                // Reasignar a un empleado más adecuado
+                                const newEmployee = betterEmployees[0];
+                                assignment.employeeId = newEmployee.id;
+                                
+                                // Actualizar cargas de trabajo
+                                employee.workload = Math.max(0, employee.workload - 1);
+                                newEmployee.workload += 1;
+                                
+                                optimizedCount++;
+                            }
+                        }
+                    });
+                    
+                    saveData();
+                    renderEmployees();
+                    renderAssignments();
+                    
+                    if (optimizedCount > 0) {
+                        showAlert(document.getElementById('successAlert'), 
+                            `Se optimizaron ${optimizedCount} asignaciones.`);
+                    } else {
+                        showAlert(document.getElementById('successAlert'), 
+                            'No se encontraron optimizaciones posibles en este momento.');
+                    }
+                }, 1200);
+            });
+        }
+        
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
