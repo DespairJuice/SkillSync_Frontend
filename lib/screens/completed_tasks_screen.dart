@@ -85,7 +85,7 @@ class CompletedTasksScreen extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        'Habilidad requerida: ${task['requiredSkill'] ?? 'N/A'}\nPrioridad: ${task['priority'] ?? 'N/A'}\nHoras estimadas: ${task['estimatedHours'] ?? 0}\nFecha inicio: ${task['fechaInicio'] != null ? DateFormat('dd/MM/yyyy').format(DateTime.parse(task['fechaInicio'])) : 'N/A'}\nFecha finalización: ${task['fechaFinalizacion'] != null ? DateFormat('dd/MM/yyyy').format(DateTime.parse(task['fechaFinalizacion'])) : 'N/A'}',
+                        'Habilidad requerida: ${task['requiredSkill'] ?? 'N/A'}\nPrioridad: ${task['priority'] ?? 'N/A'}\nHoras estimadas: ${task['estimatedHours'] ?? 0}\nFecha inicio: ${task['fechaInicio'] != null ? DateFormat("d 'de' MMMM 'de' y", 'es_ES').format(DateTime.parse(task['fechaInicio'])) : 'N/A'}\nFecha finalización: ${task['fechaFinalizacion'] != null ? DateFormat("d 'de' MMMM 'de' y", 'es_ES').format(DateTime.parse(task['fechaFinalizacion'])) : 'N/A'}',
                         style: const TextStyle(color: Colors.white70),
                       ),
                       trailing: IconButton(

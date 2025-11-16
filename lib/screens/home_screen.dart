@@ -314,14 +314,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.blue.withOpacity(0.7), Colors.purple.withOpacity(0.7)],
+                    colors: [Colors.blue.withValues(alpha: 0.7), Colors.purple.withValues(alpha: 0.7)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withValues(alpha: 0.2),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -506,9 +506,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  String? _getSkillNameById(DataProvider dataProvider, String? skillId) {
+    if (skillId == null) return null;
+    final skill = dataProvider.skills.firstWhere(
+      (s) => s['id'].toString() == skillId,
+      orElse: () => {},
+    );
+    return skill['nombre'] as String?;
+  }
+
   Widget _buildTasksTab(DataProvider dataProvider) {
-    // Show only active tasks
-    final activeTasks = dataProvider.tasks.where((task) => task['status'] != 'completed').toList();
+    // Show only active tasks that are not assigned
+    final activeTasks = dataProvider.tasks.where((task) =>
+      task['status'] != 'completed' &&
+      !dataProvider.assignments.any((assignment) => assignment['task']['id'] == task['id'])
+    ).toList();
 
     return Column(
       children: [
@@ -568,7 +580,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ),
                       subtitle: Text(
-                        'Habilidad requerida: ${task['requiredSkill'] ?? 'N/A'}\nPrioridad: ${task['priority'] ?? 'N/A'}\nHoras estimadas: ${task['estimatedHours'] ?? 0}\nFecha inicio: ${task['fechaInicio'] != null ? DateFormat('dd/MM/yyyy').format(DateTime.parse(task['fechaInicio'])) : 'N/A'}\nFecha finalización: ${task['fechaFinalizacion'] != null ? DateFormat('dd/MM/yyyy').format(DateTime.parse(task['fechaFinalizacion'])) : 'N/A'}',
+                        'Habilidad requerida: ${_getSkillNameById(dataProvider, task['requiredSkill']) ?? 'N/A'}\nPrioridad: ${task['priority'] ?? 'N/A'}\nHoras estimadas: ${task['estimatedHours'] ?? 0}\nFecha inicio: ${task['fechaInicio'] != null ? DateFormat("d 'de' MMMM 'de' y", 'es').format(DateTime.parse(task['fechaInicio'])) : 'N/A'}\nFecha finalización: ${task['fechaFinalizacion'] != null ? DateFormat("d 'de' MMMM 'de' y", 'es').format(DateTime.parse(task['fechaFinalizacion'])) : 'N/A'}',
                         style: const TextStyle(color: Colors.white70),
                       ),
                       trailing: Row(
@@ -657,7 +669,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     ),
                     subtitle: Text(
-                      'Empleado: ${assignment['employee']?['nombre'] ?? 'N/A'}\nEstado: ${assignment['estado'] ?? 'N/A'}\nFecha: ${assignment['fechaAsignacion'] ?? 'N/A'}',
+                      'Empleado: ${assignment['employee']?['nombre'] ?? 'N/A'}\nEstado: ${assignment['estado'] ?? 'N/A'}\nFecha: ${assignment['fechaAsignacion'] != null ? DateFormat("d 'de' MMMM 'de' y", 'es').format(DateTime.parse(assignment['fechaAsignacion'])) : 'N/A'}',
                       style: const TextStyle(color: Colors.white70),
                     ),
                     trailing: Row(
@@ -704,65 +716,44 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final recentAssignmentsList = recentAssignments.take(5).cast<Map<String, dynamic>>().toList();
 
     // Generate system summary chart
-    final systemSummaryChart = BarChart(
-      BarChartData(
-        barGroups: [
-          BarChartGroupData(
-            x: 0,
-            barRods: [
-              BarChartRodData(
-                toY: totalEmployees.toDouble(),
-                color: Colors.blue,
-                width: 20,
-              ),
-            ],
-          ),
-          BarChartGroupData(
-            x: 1,
-            barRods: [
-              BarChartRodData(
-                toY: activeTasks.toDouble(),
-                color: Colors.orange,
-                width: 20,
-              ),
-            ],
-          ),
-          BarChartGroupData(
-            x: 2,
-            barRods: [
-              BarChartRodData(
-                toY: completionRate.toDouble(),
-                color: Colors.green,
-                width: 20,
-              ),
-            ],
-          ),
-        ],
-        titlesData: FlTitlesData(
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                switch (value.toInt()) {
-                  case 0:
-                    return const Text('Empleados', style: TextStyle(color: Colors.white));
-                  case 1:
-                    return const Text('Tareas Activas', style: TextStyle(color: Colors.white));
-                  case 2:
-                    return const Text('Tasa %', style: TextStyle(color: Colors.white));
-                  default:
-                    return const Text('');
-                }
-              },
+    final systemSummaryChart = Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildLegendItem(Colors.blue, 'Empleados'),
+            const SizedBox(width: 16),
+            _buildLegendItem(Colors.orange, 'Asignaciones'),
+            const SizedBox(width: 16),
+            _buildLegendItem(Colors.green, 'Tareas Activas'),
+          ],
+        ),
+        SizedBox(
+          height: 140,
+          child: PieChart(
+            PieChartData(
+              sections: [
+                PieChartSectionData(
+                  value: totalEmployees.toDouble(),
+                  color: Colors.blue,
+                  radius: 40,
+                ),
+                PieChartSectionData(
+                  value: totalAssignments.toDouble(),
+                  color: Colors.orange,
+                  radius: 40,
+                ),
+                PieChartSectionData(
+                  value: activeTasks.toDouble(),
+                  color: Colors.green,
+                  radius: 40,
+                ),
+              ],
+              centerSpaceRadius: 0,
             ),
           ),
-          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
-        borderData: FlBorderData(show: false),
-        gridData: FlGridData(show: false),
-      ),
+      ],
     );
 
     // Generate productivity chart (mock data for now)
@@ -870,21 +861,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     _buildStat('$totalSkills', 'Habilidades'),
                     _buildStat('$totalAssignments', 'Asignaciones'),
                     _buildStat('$activeTasks', 'Tareas Activas'),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Tasa de Finalización', style: TextStyle(color: Colors.white70)),
-                        SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: CircularProgressIndicator(
-                            value: completionRate / 100,
-                            backgroundColor: Colors.white24,
-                            valueColor: const AlwaysStoppedAnimation<Color>(Colors.greenAccent),
-                          ),
-                        ),
-                      ],
-                    ),
+                    _buildStat('$completionRate%', 'Tasa de Finalización'),
                   ],
                   chart: systemSummaryChart,
                   gradient: const LinearGradient(colors: [Colors.blue, Colors.purple]),
@@ -950,83 +927,87 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildDashboardCard(String title, String description, List<Widget> stats, {String? buttonText, VoidCallback? onButtonPressed, Widget? chart, List<Widget>? alerts, List<Map<String, dynamic>>? recentAssignments, required LinearGradient gradient}) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: gradient,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Card(
-        color: Colors.transparent,
-        elevation: 0,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildDashboardCard(String title, String description, List<Widget> stats, 
+    {String? buttonText, VoidCallback? onButtonPressed, Widget? chart, 
+    List<Widget>? alerts, List<Map<String, dynamic>>? recentAssignments, 
+    required LinearGradient gradient}) {
+  return Container(
+    decoration: BoxDecoration(
+      gradient: gradient,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.3),
+          blurRadius: 8,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Card(
+      color: Colors.transparent,
+      elevation: 0,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column( // CORRECCIÓN: Este child estaba mal ubicado
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Icon(_getIconForTitle(title), color: Colors.white),
-                    const SizedBox(width: 8),
-                    Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(description, style: const TextStyle(color: Colors.white70)),
-                if (chart != null) ...[
-                  const SizedBox(height: 16),
-                  SizedBox(height: 150, child: chart),
-                ],
-                if (stats.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  ...stats,
-                ],
-                if (recentAssignments != null && recentAssignments.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  const Text('Asignaciones Recientes:', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  ...recentAssignments.map((assignment) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      '${assignment['employee']?['nombre'] ?? 'N/A'} - ${assignment['task']?['nombre'] ?? 'N/A'}',
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                  )),
-                ],
-                if (alerts != null && alerts.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  ...alerts,
-                ],
-                if (buttonText != null && onButtonPressed != null) ...[
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: onButtonPressed,
-                    icon: Icon(_getButtonIcon(buttonText), color: Colors.white),
-                    label: Text(buttonText, style: const TextStyle(color: Colors.white)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white24,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ],
+                Icon(_getIconForTitle(title), color: Colors.white),
+                const SizedBox(width: 8),
+                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
               ],
             ),
-          ),
+            const SizedBox(height: 8),
+            Text(description, style: const TextStyle(color: Colors.white70)),
+            ... (chart != null ? [
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 160,
+                child: chart,
+              ),
+            ] : []),
+            ... (stats.isNotEmpty ? [
+              const SizedBox(height: 16),
+              ...stats,
+            ] : []),
+            ... (recentAssignments != null && recentAssignments.isNotEmpty ? [
+              const SizedBox(height: 16),
+              const Text("Asignaciones Recientes:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ...recentAssignments.map((assignment) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Text(
+                  "${assignment['employee']?['nombre'] ?? 'N/A'} - ${assignment['task']?['nombre'] ?? 'N/A'}",
+                  style: const TextStyle(color: Colors.white70),
+                ),
+              )),
+            ] : []),
+            ... (alerts != null && alerts.isNotEmpty ? [
+              const SizedBox(height: 16),
+              ...alerts,
+            ] : []),
+            ... (buttonText != null && onButtonPressed != null ? [
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: onButtonPressed,
+                icon: Icon(_getButtonIcon(buttonText), color: Colors.white),
+                label: Text(buttonText, style: const TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white.withOpacity(0.24),
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ] : []),
+          ],
         ),
-      ),
-    );
-  }
+      ), // CORRECCIÓN: Este paréntesis cierra el Padding correctamente
+    ), // CORRECCIÓN: Este paréntesis cierra el Card correctamente
+  );
+}
 
   Widget _buildStat(String value, String label) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 1),
       child: Row(
         children: [
           Expanded(
@@ -1324,6 +1305,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _showAddEmployeeDialog(BuildContext context) {
+    final formKey = GlobalKey<FormState>();
     final nombreController = TextEditingController();
     final emailController = TextEditingController();
     final telefonoController = TextEditingController();
@@ -1333,7 +1315,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
         backgroundColor: const Color(0xFF1A1A2E),
         title: Row(
           children: [
@@ -1355,81 +1338,137 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             borderRadius: BorderRadius.circular(12),
           ),
           padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nombreController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+          child: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+              children: [
+                Tooltip(
+                  message: 'Solo letras, espacios y acentos permitidos.',
+                  child: TextFormField(
+                    controller: nombreController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nombre',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                      errorStyle: TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'El nombre es obligatorio';
+                      }
+                      if (value.length < 3) {
+                        return 'El nombre debe tener al menos 3 caracteres';
+                      }
+                      if (!RegExp(r'^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$').hasMatch(value)) {
+                        return 'El nombre solo puede contener letras, espacios y acentos';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                const SizedBox(height: 16),
+                Tooltip(
+                  message: 'Formato: usuario@dominio.com',
+                  child: TextFormField(
+                    controller: emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                      errorStyle: TextStyle(color: Colors.redAccent, fontSize: 12),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'El email es obligatorio';
+                      }
+                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(value)) {
+                        return 'Ingresa un email válido (ej. alguien@example.com)';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              TextField(
-                controller: telefonoController,
-                decoration: const InputDecoration(
-                  labelText: 'Teléfono',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                const SizedBox(height: 16),
+                Tooltip(
+                  message: 'Formato: 3XXXXXXXXX',
+                  child: TextFormField(
+                    controller: telefonoController,
+                    decoration: const InputDecoration(
+                      labelText: 'Teléfono',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                      errorStyle: TextStyle(color: Colors.redAccent, fontSize: 12),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'El teléfono es obligatorio';
+                      }
+                      if (!RegExp(r'^3\d{9}$').hasMatch(value)) {
+                        return 'El teléfono debe tener 10 dígitos y empezar con 3';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              DropdownButtonFormField<String>(
-                dropdownColor: const Color(0xFF1A1A2E),
-                initialValue: selectedCargo,
-                items: cargos.map((cargo) => DropdownMenuItem(value: cargo, child: Text(cargo, style: const TextStyle(color: Colors.white)))).toList(),
-                onChanged: (value) => selectedCargo = value!,
-                decoration: const InputDecoration(
-                  labelText: 'Cargo',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  dropdownColor: const Color(0xFF1A1A2E),
+                  initialValue: selectedCargo,
+                  items: cargos.map((cargo) => DropdownMenuItem(value: cargo, child: Text(cargo, style: const TextStyle(color: Colors.white)))).toList(),
+                  onChanged: (value) => selectedCargo = value!,
+                  decoration: const InputDecoration(
+                    labelText: 'Cargo',
+                    labelStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                  ),
+                  style: const TextStyle(color: Colors.white),
                 ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              DropdownButtonFormField<String>(
-                dropdownColor: const Color(0xFF1A1A2E),
-                initialValue: selectedDisponibilidad,
-                items: disponibilidades.map((disp) => DropdownMenuItem(value: disp, child: Text(disp, style: const TextStyle(color: Colors.white)))).toList(),
-                onChanged: (value) => selectedDisponibilidad = value!,
-                decoration: const InputDecoration(
-                  labelText: 'Disponibilidad',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  dropdownColor: const Color(0xFF1A1A2E),
+                  initialValue: selectedDisponibilidad,
+                  items: disponibilidades.map((disp) => DropdownMenuItem(value: disp, child: Text(disp, style: const TextStyle(color: Colors.white)))).toList(),
+                  onChanged: (value) => selectedDisponibilidad = value!,
+                  decoration: const InputDecoration(
+                    labelText: 'Disponibilidad',
+                    labelStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                  ),
+                  style: const TextStyle(color: Colors.white),
                 ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              DropdownButtonFormField<String>(
-                dropdownColor: const Color(0xFF1A1A2E),
-                initialValue: selectedProductividad,
-                items: productividades.map((prod) => DropdownMenuItem(value: prod, child: Text(prod, style: const TextStyle(color: Colors.white)))).toList(),
-                onChanged: (value) => selectedProductividad = value!,
-                decoration: const InputDecoration(
-                  labelText: 'Productividad',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  dropdownColor: const Color(0xFF1A1A2E),
+                  initialValue: selectedProductividad,
+                  items: productividades.map((prod) => DropdownMenuItem(value: prod, child: Text(prod, style: const TextStyle(color: Colors.white)))).toList(),
+                  onChanged: (value) => selectedProductividad = value!,
+                  decoration: const InputDecoration(
+                    labelText: 'Productividad',
+                    labelStyle: TextStyle(color: Colors.white70),
+                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                  ),
+                  style: const TextStyle(color: Colors.white),
                 ),
-                style: const TextStyle(color: Colors.white),
+              ],
               ),
-            ],
+
+            ),
+
           ),
+
         ),
+
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -1437,18 +1476,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           ElevatedButton(
             onPressed: () async {
-              final disponibilidad = double.parse(selectedDisponibilidad.replaceAll('%', '')) / 100;
-              final productividad = selectedProductividad == 'Baja' ? 0.5 : selectedProductividad == 'Media' ? 0.8 : 1.0;
-              final employee = {
-                'nombre': nombreController.text,
-                'email': emailController.text,
-                'telefono': telefonoController.text,
-                'cargo': selectedCargo,
-                'disponibilidad': disponibilidad,
-                'productividad': productividad,
-              };
-              await context.read<DataProvider>().createEmployee(employee);
-              Navigator.pop(context);
+              if (formKey.currentState!.validate()) {
+                final disponibilidad = double.parse(selectedDisponibilidad.replaceAll('%', '')) / 100;
+                final productividad = selectedProductividad == 'Baja' ? 0.5 : selectedProductividad == 'Media' ? 0.8 : 1.0;
+                final employee = {
+                  'nombre': nombreController.text,
+                  'email': emailController.text,
+                  'telefono': telefonoController.text,
+                  'cargo': selectedCargo,
+                  'disponibilidad': disponibilidad,
+                  'productividad': productividad,
+                };
+                await context.read<DataProvider>().createEmployee(employee);
+                Navigator.pop(context);
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blueAccent,
@@ -1458,10 +1499,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ],
       ),
-    );
+    )
+  );
   }
 
   void _showEditEmployeeDialog(BuildContext context, Map<String, dynamic> employee) {
+    final formKey = GlobalKey<FormState>();
     final nombreController = TextEditingController(text: employee['nombre']);
     final emailController = TextEditingController(text: employee['email']);
     final telefonoController = TextEditingController(text: employee['telefono']);
@@ -1493,79 +1536,131 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             borderRadius: BorderRadius.circular(12),
           ),
           padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nombreController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
-                ),
-                style: const TextStyle(color: Colors.white),
+          child: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Tooltip(
+                    message: 'Solo letras, espacios y acentos permitidos.',
+                    child: TextFormField(
+                      controller: nombreController,
+                      decoration: const InputDecoration(
+                        labelText: 'Nombre',
+                        labelStyle: TextStyle(color: Colors.white70),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                        errorStyle: TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'El nombre es obligatorio';
+                        }
+                        if (value.length < 3) {
+                          return 'El nombre debe tener al menos 3 caracteres';
+                        }
+                        if (!RegExp(r'^[a-zA-Z\sáéíóúÁÉÍÓÚñÑ]+$').hasMatch(value)) {
+                          return 'El nombre solo puede contener letras, espacios y acentos';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Tooltip(
+                    message: 'Formato: usuario@dominio.com',
+                    child: TextFormField(
+                      controller: emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: TextStyle(color: Colors.white70),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                        errorStyle: TextStyle(color: Colors.redAccent, fontSize: 12),
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'El email es obligatorio';
+                        }
+                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(value)) {
+                          return 'Ingresa un email válido (ej. alguien@example.com)';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Tooltip(
+                    message: 'Formato: 3XXXXXXXXX',
+                    child: TextFormField(
+                      controller: telefonoController,
+                      decoration: const InputDecoration(
+                        labelText: 'Teléfono',
+                        labelStyle: TextStyle(color: Colors.white70),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                        errorStyle: TextStyle(color: Colors.redAccent, fontSize: 12),
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'El teléfono es obligatorio';
+                        }
+                        if (!RegExp(r'^3\d{9}$').hasMatch(value)) {
+                          return 'El teléfono debe tener 10 dígitos y empezar con 3';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    dropdownColor: const Color(0xFF1A1A2E),
+                    initialValue: selectedCargo,
+                    items: cargos.map((cargo) => DropdownMenuItem(value: cargo, child: Text(cargo, style: const TextStyle(color: Colors.white)))).toList(),
+                    onChanged: (value) => selectedCargo = value!,
+                    decoration: const InputDecoration(
+                      labelText: 'Cargo',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    dropdownColor: const Color(0xFF1A1A2E),
+                    initialValue: selectedDisponibilidad,
+                    items: disponibilidades.map((disp) => DropdownMenuItem(value: disp, child: Text(disp, style: const TextStyle(color: Colors.white)))).toList(),
+                    onChanged: (value) => selectedDisponibilidad = value!,
+                    decoration: const InputDecoration(
+                      labelText: 'Disponibilidad',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    dropdownColor: const Color(0xFF1A1A2E),
+                    initialValue: selectedProductividad,
+                    items: productividades.map((prod) => DropdownMenuItem(value: prod, child: Text(prod, style: const TextStyle(color: Colors.white)))).toList(),
+                    onChanged: (value) => selectedProductividad = value!,
+                    decoration: const InputDecoration(
+                      labelText: 'Productividad',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ],
               ),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              TextField(
-                controller: telefonoController,
-                decoration: const InputDecoration(
-                  labelText: 'Teléfono',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              DropdownButtonFormField<String>(
-                dropdownColor: const Color(0xFF1A1A2E),
-                initialValue: selectedCargo,
-                items: cargos.map((cargo) => DropdownMenuItem(value: cargo, child: Text(cargo, style: const TextStyle(color: Colors.white)))).toList(),
-                onChanged: (value) => selectedCargo = value!,
-                decoration: const InputDecoration(
-                  labelText: 'Cargo',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              DropdownButtonFormField<String>(
-                dropdownColor: const Color(0xFF1A1A2E),
-                initialValue: selectedDisponibilidad,
-                items: disponibilidades.map((disp) => DropdownMenuItem(value: disp, child: Text(disp, style: const TextStyle(color: Colors.white)))).toList(),
-                onChanged: (value) => selectedDisponibilidad = value!,
-                decoration: const InputDecoration(
-                  labelText: 'Disponibilidad',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
-              DropdownButtonFormField<String>(
-                dropdownColor: const Color(0xFF1A1A2E),
-                initialValue: selectedProductividad,
-                items: productividades.map((prod) => DropdownMenuItem(value: prod, child: Text(prod, style: const TextStyle(color: Colors.white)))).toList(),
-                onChanged: (value) => selectedProductividad = value!,
-                decoration: const InputDecoration(
-                  labelText: 'Productividad',
-                  labelStyle: TextStyle(color: Colors.white70),
-                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.blueAccent)),
-                ),
-                style: const TextStyle(color: Colors.white),
-              ),
-            ],
+            ),
           ),
         ),
         actions: [
@@ -1575,19 +1670,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           ElevatedButton(
             onPressed: () async {
-              final disponibilidad = double.parse(selectedDisponibilidad.replaceAll('%', '')) / 100;
-              final productividad = selectedProductividad == 'Baja' ? 0.5 : selectedProductividad == 'Media' ? 0.8 : 1.0;
-              final updatedEmployee = {
-                'nombre': nombreController.text,
-                'email': emailController.text,
-                'telefono': telefonoController.text,
-                'cargo': selectedCargo,
-                'disponibilidad': disponibilidad,
-                'productividad': productividad,
-              };
-              final employeeId = int.tryParse(employee['id'].toString()) ?? 0;
-              await context.read<DataProvider>().updateEmployee(employeeId, updatedEmployee);
-              Navigator.pop(context);
+              if (formKey.currentState!.validate()) {
+                final disponibilidad = double.parse(selectedDisponibilidad.replaceAll('%', '')) / 100;
+                final productividad = selectedProductividad == 'Baja' ? 0.5 : selectedProductividad == 'Media' ? 0.8 : 1.0;
+                final updatedEmployee = {
+                  'nombre': nombreController.text,
+                  'email': emailController.text,
+                  'telefono': telefonoController.text,
+                  'cargo': selectedCargo,
+                  'disponibilidad': disponibilidad,
+                  'productividad': productividad,
+                };
+                final employeeId = int.tryParse(employee['id'].toString()) ?? 0;
+                await context.read<DataProvider>().updateEmployee(employeeId, updatedEmployee);
+                Navigator.pop(context);
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blueAccent,
@@ -1667,11 +1764,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           ElevatedButton(
             onPressed: () async {
+              final dataProvider = context.read<DataProvider>();
+              final exists = dataProvider.skills.any((skill) =>
+                skill['nombre'] == selectedNombre && skill['nivel'] == selectedLevel
+              );
+              if (exists) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('La habilidad con este nivel ya existe')),
+                );
+                return;
+              }
               final skill = {
                 'nombre': selectedNombre,
                 'nivel': selectedLevel,
               };
-              await context.read<DataProvider>().createSkill(skill);
+              await dataProvider.createSkill(skill);
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
@@ -1692,27 +1799,65 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Editar Habilidad'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
+        backgroundColor: const Color(0xFF1A1A2E),
+        title: Row(
           children: [
-            DropdownButtonFormField<String>(
-              initialValue: selectedNombre,
-              items: habilidades.map((hab) => DropdownMenuItem(value: hab, child: Text(hab))).toList(),
-              onChanged: (value) => selectedNombre = value!,
-              decoration: const InputDecoration(labelText: 'Nombre de la Habilidad'),
-            ),
-            DropdownButtonFormField<String>(
-              initialValue: selectedLevel,
-              items: ['BASICO', 'INTERMEDIO', 'AVANZADO'].map((level) => DropdownMenuItem(value: level, child: Text(level))).toList(),
-              onChanged: (value) => selectedLevel = value!,
-              decoration: const InputDecoration(labelText: 'Nivel'),
+            const Icon(Icons.edit, color: Colors.greenAccent),
+            const SizedBox(width: 8),
+            Text(
+              'Editar Habilidad',
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ],
         ),
+        content: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<String>(
+                dropdownColor: const Color(0xFF1A1A2E),
+                initialValue: selectedNombre,
+                items: habilidades.map((hab) => DropdownMenuItem(value: hab, child: Text(hab, style: const TextStyle(color: Colors.white)))).toList(),
+                onChanged: (value) => selectedNombre = value!,
+                decoration: const InputDecoration(
+                  labelText: 'Nombre de la Habilidad',
+                  labelStyle: TextStyle(color: Colors.white70),
+                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.greenAccent)),
+                ),
+                style: const TextStyle(color: Colors.white),
+              ),
+              DropdownButtonFormField<String>(
+                dropdownColor: const Color(0xFF1A1A2E),
+                initialValue: selectedLevel,
+                items: ['BASICO', 'INTERMEDIO', 'AVANZADO'].map((level) => DropdownMenuItem(value: level, child: Text(level, style: const TextStyle(color: Colors.white)))).toList(),
+                onChanged: (value) => selectedLevel = value!,
+                decoration: const InputDecoration(
+                  labelText: 'Nivel',
+                  labelStyle: TextStyle(color: Colors.white70),
+                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.greenAccent)),
+                ),
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
           TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar', style: TextStyle(color: Colors.white70)),
+          ),
+          ElevatedButton(
             onPressed: () async {
               final updatedSkill = {
                 'nombre': selectedNombre,
@@ -1722,6 +1867,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               await context.read<DataProvider>().updateSkill(skillId, updatedSkill);
               Navigator.pop(context);
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.greenAccent,
+              foregroundColor: Colors.black,
+            ),
             child: const Text('Actualizar'),
           ),
         ],
@@ -1798,7 +1947,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 DropdownButtonFormField<String>(
                   dropdownColor: const Color(0xFF1A1A2E),
                   initialValue: selectedRequiredSkill,
-                  items: context.read<DataProvider>().skills.map((skill) => DropdownMenuItem<String>(value: skill['nombre'] as String, child: Text(skill['nombre'] as String, style: const TextStyle(color: Colors.white)))).toList(),
+                  items: context.read<DataProvider>().skills.map((skill) => DropdownMenuItem<String>(value: skill['id'].toString(), child: Text("${skill['nombre']}: ${skill['nivel']}", style: const TextStyle(color: Colors.white)))).toList(),
                   onChanged: (value) => setState(() => selectedRequiredSkill = value),
                   decoration: const InputDecoration(
                     labelText: 'Habilidad Requerida',
@@ -1925,80 +2074,152 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Editar Tarea'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+          backgroundColor: const Color(0xFF1A1A2E),
+          title: Row(
             children: [
-              DropdownButtonFormField<String>(
-                initialValue: selectedNombre,
-                items: tareas.map((tarea) => DropdownMenuItem<String>(value: tarea, child: Text(tarea))).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedNombre = value!;
-                    descripcionController.text = descripciones[selectedNombre] ?? '';
-                  });
-                },
-                decoration: const InputDecoration(labelText: 'Nombre'),
-              ),
-              TextField(
-                controller: descripcionController,
-                decoration: const InputDecoration(labelText: 'Descripción'),
-                readOnly: true,
-              ),
-              DropdownButtonFormField<String>(
-                initialValue: selectedRequiredSkill,
-                items: context.read<DataProvider>().skills.map((skill) => DropdownMenuItem<String>(value: skill['nombre'] as String, child: Text(skill['nombre'] as String))).toList(),
-                onChanged: (value) => setState(() => selectedRequiredSkill = value),
-                decoration: const InputDecoration(labelText: 'Habilidad Requerida'),
-              ),
-              DropdownButtonFormField<String>(
-                initialValue: selectedPriority,
-                items: ['BAJA', 'MEDIA', 'ALTA', 'CRITICA'].map((priority) => DropdownMenuItem<String>(value: priority, child: Text(priority))).toList(),
-                onChanged: (value) => setState(() => selectedPriority = value!),
-                decoration: const InputDecoration(labelText: 'Prioridad'),
-              ),
-              TextField(controller: estimatedHoursController, decoration: const InputDecoration(labelText: 'Horas Estimadas')),
-              TextField(
-                readOnly: true,
-                decoration: InputDecoration(
-                  labelText: 'Fecha Inicio',
-                  hintText: selectedFechaInicio != null ? DateFormat('dd/MM/yyyy').format(selectedFechaInicio!) : 'Seleccionar fecha',
-                ),
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: selectedFechaInicio ?? DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2101),
-                  );
-                  if (picked != null) {
-                    setState(() => selectedFechaInicio = picked);
-                  }
-                },
-              ),
-              TextField(
-                readOnly: true,
-                decoration: InputDecoration(
-                  labelText: 'Fecha Finalización',
-                  hintText: selectedFechaFinalizacion != null ? DateFormat('dd/MM/yyyy').format(selectedFechaFinalizacion!) : 'Seleccionar fecha',
-                ),
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: selectedFechaFinalizacion ?? DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2101),
-                  );
-                  if (picked != null) {
-                    setState(() => selectedFechaFinalizacion = picked);
-                  }
-                },
+              const Icon(Icons.edit, color: Colors.orangeAccent),
+              const SizedBox(width: 8),
+              Text(
+                'Editar Tarea',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ],
           ),
+          content: Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String>(
+                    dropdownColor: const Color(0xFF1A1A2E),
+                    initialValue: selectedNombre,
+                    items: tareas.map((tarea) => DropdownMenuItem<String>(value: tarea, child: Text(tarea, style: const TextStyle(color: Colors.white)))).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedNombre = value!;
+                        descripcionController.text = descripciones[selectedNombre] ?? '';
+                      });
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Nombre',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.orangeAccent)),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  TextField(
+                    controller: descripcionController,
+                    decoration: const InputDecoration(
+                      labelText: 'Descripción',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.orangeAccent)),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                    readOnly: true,
+                  ),
+                  DropdownButtonFormField<String>(
+                    dropdownColor: const Color(0xFF1A1A2E),
+                    initialValue: selectedRequiredSkill,
+                    items: context.read<DataProvider>().skills.map((skill) => DropdownMenuItem<String>(value: skill['id'].toString(), child: Text("${skill['nombre']}: ${skill['nivel']}", style: const TextStyle(color: Colors.white)))).toList(),
+                    onChanged: (value) => setState(() => selectedRequiredSkill = value),
+                    decoration: const InputDecoration(
+                      labelText: 'Habilidad Requerida',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.orangeAccent)),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  DropdownButtonFormField<String>(
+                    dropdownColor: const Color(0xFF1A1A2E),
+                    initialValue: selectedPriority,
+                    items: ['BAJA', 'MEDIA', 'ALTA', 'CRITICA'].map((priority) => DropdownMenuItem<String>(value: priority, child: Text(priority, style: const TextStyle(color: Colors.white)))).toList(),
+                    onChanged: (value) => setState(() => selectedPriority = value!),
+                    decoration: const InputDecoration(
+                      labelText: 'Prioridad',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.orangeAccent)),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  TextField(
+                    controller: estimatedHoursController,
+                    decoration: const InputDecoration(
+                      labelText: 'Horas Estimadas',
+                      labelStyle: TextStyle(color: Colors.white70),
+                      enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.orangeAccent)),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  TextField(
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      labelText: 'Fecha Inicio',
+                      labelStyle: const TextStyle(color: Colors.white70),
+                      hintText: selectedFechaInicio != null ? DateFormat('dd/MM/yyyy').format(selectedFechaInicio!) : 'Seleccionar fecha',
+                      hintStyle: const TextStyle(color: Colors.white54),
+                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.orangeAccent)),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: selectedFechaInicio ?? DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2101),
+                      );
+                      if (picked != null) {
+                        setState(() => selectedFechaInicio = picked);
+                      }
+                    },
+                  ),
+                  TextField(
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      labelText: 'Fecha Finalización',
+                      labelStyle: const TextStyle(color: Colors.white70),
+                      hintText: selectedFechaFinalizacion != null ? DateFormat('dd/MM/yyyy').format(selectedFechaFinalizacion!) : 'Seleccionar fecha',
+                      hintStyle: const TextStyle(color: Colors.white54),
+                      enabledBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                      focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.orangeAccent)),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: selectedFechaFinalizacion ?? DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2101),
+                      );
+                      if (picked != null) {
+                        setState(() => selectedFechaFinalizacion = picked);
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
             TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancelar', style: TextStyle(color: Colors.white70)),
+            ),
+            ElevatedButton(
               onPressed: () async {
                 final updatedTask = {
                   'nombre': selectedNombre,
@@ -2014,6 +2235,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 await context.read<DataProvider>().updateTask(taskId, updatedTask);
                 Navigator.pop(context);
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orangeAccent,
+                foregroundColor: Colors.black,
+              ),
               child: const Text('Actualizar'),
             ),
           ],
@@ -2032,6 +2257,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       return;
     }
     final task = matchingTasks.first;
+
+    // Check if task is already assigned
+    final isAlreadyAssigned = dataProvider.assignments.any((assignment) => assignment['task']['id'] == task['id']);
+    if (isAlreadyAssigned) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('La tarea ya está asignada')),
+      );
+      return;
+    }
+
     final taskName = task['nombre'];
     final suitableCargos = taskCargoMapping[taskName] ?? [];
 
@@ -2132,6 +2367,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLegendItem(Color color, String label) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white, fontSize: 14),
+        ),
+      ],
     );
   }
 }

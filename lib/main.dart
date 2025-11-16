@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'providers/data_provider.dart';
 import 'screens/splash_screen.dart';
 import 'services/api_service.dart';
@@ -9,6 +9,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   print('Main: Starting app initialization');
+
+  // Initialize date formatting for Spanish locale
+  await initializeDateFormatting('es', null);
 
   // Set the API base URL
   await ApiService.setBaseUrl('https://skillsync-backend-production-e390.up.railway.app');
