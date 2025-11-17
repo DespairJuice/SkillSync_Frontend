@@ -164,21 +164,36 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'SKILLSYNC',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2.0,
+                ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [Colors.blueAccent, Colors.purpleAccent],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds),
+                  child: const Text(
+                    'SKILLSYNC',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2.0,
+                      color: Colors.white, // Base color for shader
+                    ),
                   ),
                 ),
-                Text(
-                  'Potenciando Personas, Optimizando Procesos',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12,
-                    color: Colors.white70,
-                    fontStyle: FontStyle.italic,
+                ShaderMask(
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [Colors.cyanAccent, Colors.tealAccent],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds),
+                  child: Text(
+                    'Potenciando Personas, Optimizando Procesos',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 12,
+                      color: Colors.white, // Base color for shader
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
                 ),
               ],
@@ -238,30 +253,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       }
                     }
                   },
-                  child: AnimatedBuilder(
-                    animation: _animationController,
-                    builder: (context, child) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          gradient: RadialGradient(
-                            center: Alignment.center,
-                            radius: 1.5,
-                            colors: [
-                              _gradientAnimation.value!,
-                              _backgroundAnimation.value!,
-                              const Color(0xFF1A1A2E),
-                              const Color(0xFF16213E),
-                              const Color(0xFF0F0F23),
-                              const Color(0xFF0A0A0F),
-                              const Color(0xFF2D1B69), // Added purple
-                              const Color(0xFF1E3A8A), // Added blue
-                            ],
-                            stops: [0.0, 0.2, 0.4, 0.6, 0.8, 0.9, 0.95, 1.0],
+                    child: AnimatedBuilder(
+                      animation: _animationController,
+                      builder: (context, child) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.black.withOpacity(0.95),
+                                Colors.blue.shade900.withOpacity(0.95),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                           ),
-                        ),
-                        child: child,
-                      );
-                    },
+                          child: child,
+                        );
+                      },
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 300),
                       transitionBuilder: (Widget child, Animation<double> animation) {
@@ -289,220 +297,323 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildEmployeesTab(DataProvider dataProvider) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ElevatedButton.icon(
-            onPressed: () => _showAddEmployeeDialog(context),
-            icon: const Icon(Icons.add),
-            label: const Text('Agregar Empleado'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueAccent,
-              foregroundColor: Colors.white,
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.black.withOpacity(0.95),
+                Colors.blue.shade900.withOpacity(0.95),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: dataProvider.employees.length,
-            itemBuilder: (context, index) {
-              final employee = dataProvider.employees[index];
-              final disponibilidad = (employee['disponibilidad'] ?? 0) * 100;
-              final productividad = (employee['productividad'] ?? 0) * 100;
-              return Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.blue.withValues(alpha: 0.7), Colors.purple.withValues(alpha: 0.7)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: child!,
+              ),
+            ),
+          ),
+        );
+      },
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddEmployeeDialog(context),
+              icon: const Icon(Icons.add),
+              label: const Text('Agregar Empleado'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: dataProvider.employees.length,
+              itemBuilder: (context, index) {
+                final employee = dataProvider.employees[index];
+                final disponibilidad = (employee['disponibilidad'] ?? 0) * 100;
+                final productividad = (employee['productividad'] ?? 0) * 100;
+                return Container(
+                  margin: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.blue.withValues(alpha: 0.7), Colors.purple.withValues(alpha: 0.7)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ],
-                ),
-                child: Card(
-                  color: Colors.transparent,
-                  elevation: 0,
-                  child: ListTile(
-                    leading: const Icon(Icons.person, color: Colors.white, size: 30),
-                    title: Text(
-                      employee['nombre'] ?? 'Sin nombre',
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        shadows: [Shadow(color: Colors.black, blurRadius: 2)],
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Card(
+                    color: Colors.transparent,
+                    elevation: 0,
+                    child: ListTile(
+                      leading: const Icon(Icons.person, color: Colors.white, size: 30),
+                      title: ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [Colors.blueAccent, Colors.white],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ).createShader(bounds),
+                        child: Text(
+                          employee['nombre'] ?? 'Sin nombre',
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            shadows: [Shadow(color: Colors.black, blurRadius: 2)],
+                          ),
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ShaderMask(
+                            shaderCallback: (bounds) => const LinearGradient(
+                              colors: [Colors.cyanAccent, Colors.white],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ).createShader(bounds),
+                            child: Text(
+                              'Cargo: ${employee['cargo'] ?? 'N/A'}',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          ShaderMask(
+                            shaderCallback: (bounds) => const LinearGradient(
+                              colors: [Colors.cyanAccent, Colors.white],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ).createShader(bounds),
+                            child: Text(
+                              'Email: ${employee['email'] ?? 'N/A'}',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          ShaderMask(
+                            shaderCallback: (bounds) => const LinearGradient(
+                              colors: [Colors.cyanAccent, Colors.white],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ).createShader(bounds),
+                            child: Text(
+                              'Teléfono: ${employee['telefono'] ?? 'N/A'}',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              ShaderMask(
+                                shaderCallback: (bounds) => const LinearGradient(
+                                  colors: [Colors.cyanAccent, Colors.white],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ).createShader(bounds),
+                                child: const Text('Disponibilidad: ', style: TextStyle(color: Colors.white)),
+                              ),
+                              Text(
+                                '${disponibilidad.toInt()}%',
+                                style: TextStyle(
+                                  color: disponibilidad > 75 ? Colors.greenAccent : disponibilidad > 50 ? Colors.yellowAccent : Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              ShaderMask(
+                                shaderCallback: (bounds) => const LinearGradient(
+                                  colors: [Colors.cyanAccent, Colors.white],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ).createShader(bounds),
+                                child: const Text('Productividad: ', style: TextStyle(color: Colors.white)),
+                              ),
+                              Text(
+                                '${productividad.toInt()}%',
+                                style: TextStyle(
+                                  color: productividad > 80 ? Colors.greenAccent : productividad > 60 ? Colors.yellowAccent : Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.white),
+                            onPressed: () => _showEditEmployeeDialog(context, employee),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.white),
+                            onPressed: () => _showDeleteDialog(context, 'empleado', employee['id'] as int, () => dataProvider.deleteEmployee(employee['id'] as int)),
+                          ),
+                        ],
                       ),
                     ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Cargo: ${employee['cargo'] ?? 'N/A'}',
-                          style: const TextStyle(color: Colors.white70),
-                        ),
-                        Text(
-                          'Email: ${employee['email'] ?? 'N/A'}',
-                          style: const TextStyle(color: Colors.white70),
-                        ),
-                        Text(
-                          'Teléfono: ${employee['telefono'] ?? 'N/A'}',
-                          style: const TextStyle(color: Colors.white70),
-                        ),
-                        Row(
-                          children: [
-                            const Text('Disponibilidad: ', style: TextStyle(color: Colors.white70)),
-                            Text(
-                              '${disponibilidad.toInt()}%',
-                              style: TextStyle(
-                                color: disponibilidad > 75 ? Colors.greenAccent : disponibilidad > 50 ? Colors.yellowAccent : Colors.redAccent,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const Text('Productividad: ', style: TextStyle(color: Colors.white70)),
-                            Text(
-                              '${productividad.toInt()}%',
-                              style: TextStyle(
-                                color: productividad > 80 ? Colors.greenAccent : productividad > 60 ? Colors.yellowAccent : Colors.redAccent,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.white),
-                          onPressed: () => _showEditEmployeeDialog(context, employee),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.white),
-                          onPressed: () => _showDeleteDialog(context, 'empleado', employee['id'] as int, () => dataProvider.deleteEmployee(employee['id'] as int)),
-                        ),
-                      ],
-                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildSkillsTab(DataProvider dataProvider) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ElevatedButton.icon(
-            onPressed: () => _showAddSkillDialog(context),
-            icon: const Icon(Icons.add),
-            label: const Text('Agregar Habilidad'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.greenAccent,
-              foregroundColor: Colors.black,
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.black.withOpacity(0.95),
+                Colors.blue.shade900.withOpacity(0.95),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: dataProvider.skills.length,
-            itemBuilder: (context, index) {
-              final skill = dataProvider.skills[index];
-              final nivel = skill['nivel'] ?? 'N/A';
-              Color nivelColor;
-              switch (nivel) {
-                case 'BASICO':
-                  nivelColor = Colors.redAccent;
-                  break;
-                case 'INTERMEDIO':
-                  nivelColor = Colors.yellowAccent;
-                  break;
-                case 'AVANZADO':
-                  nivelColor = Colors.greenAccent;
-                  break;
-                default:
-                  nivelColor = Colors.grey;
-              }
-              return Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.green.withOpacity(0.7), Colors.teal.withOpacity(0.7)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: child!,
+              ),
+            ),
+          ),
+        );
+      },
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddSkillDialog(context),
+              icon: const Icon(Icons.add),
+              label: const Text('Agregar Habilidad'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.greenAccent,
+                foregroundColor: Colors.black,
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: dataProvider.skills.length,
+              itemBuilder: (context, index) {
+                final skill = dataProvider.skills[index];
+                final nivel = skill['nivel'] ?? 'N/A';
+                Color nivelColor;
+                switch (nivel) {
+                  case 'BASICO':
+                    nivelColor = Colors.redAccent;
+                    break;
+                  case 'INTERMEDIO':
+                    nivelColor = Colors.yellowAccent;
+                    break;
+                  case 'AVANZADO':
+                    nivelColor = Colors.greenAccent;
+                    break;
+                  default:
+                    nivelColor = Colors.grey;
+                }
+                return Container(
+                  margin: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.green.withOpacity(0.7), Colors.teal.withOpacity(0.7)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ],
-                ),
-                child: Card(
-                  color: Colors.transparent,
-                  elevation: 0,
-                  child: ListTile(
-                    leading: const Icon(Icons.code, color: Colors.white, size: 30),
-                    title: Text(
-                      skill['nombre'] ?? 'Sin nombre',
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        shadows: [Shadow(color: Colors.black, blurRadius: 2)],
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
-                    ),
-                    subtitle: Row(
-                      children: [
-                        const Text('Nivel: ', style: TextStyle(color: Colors.white70)),
-                        Text(
-                          nivel,
-                          style: TextStyle(
-                            color: nivelColor,
+                    ],
+                  ),
+                  child: Card(
+                    color: Colors.transparent,
+                    elevation: 0,
+                    child: ListTile(
+                      leading: const Icon(Icons.code, color: Colors.white, size: 30),
+                      title: ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [Colors.greenAccent, Colors.white],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ).createShader(bounds),
+                        child: Text(
+                          skill['nombre'] ?? 'Sin nombre',
+                          style: const TextStyle(
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            shadows: [Shadow(color: Colors.black, blurRadius: 2)],
                           ),
                         ),
-                      ],
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.white),
-                          onPressed: () => _showEditSkillDialog(context, skill),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.white),
-                          onPressed: () => _showDeleteDialog(context, 'habilidad', skill['id'] as int, () => dataProvider.deleteSkill(skill['id'] as int)),
-                        ),
-                      ],
+                      ),
+                      subtitle: Row(
+                        children: [
+                          const Text('Nivel: ', style: TextStyle(color: Colors.white70)),
+                          Text(
+                            nivel,
+                            style: TextStyle(
+                              color: nivelColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.white),
+                            onPressed: () => _showEditSkillDialog(context, skill),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.white),
+                            onPressed: () => _showDeleteDialog(context, 'habilidad', skill['id'] as int, () => dataProvider.deleteSkill(skill['id'] as int)),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -522,37 +633,204 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       !dataProvider.assignments.any((assignment) => assignment['task']['id'] == task['id'])
     ).toList();
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ElevatedButton.icon(
-            onPressed: () => _showAddTaskDialog(context),
-            icon: const Icon(Icons.add),
-            label: const Text('Agregar Tarea'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orangeAccent,
-              foregroundColor: Colors.black,
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.black.withOpacity(0.95),
+                Colors.blue.shade900.withOpacity(0.95),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
-        ),
-        Expanded(
-          child: ListView(
-            children: [
-              // Active Tasks Section
-              if (activeTasks.isNotEmpty) ...[
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Text(
-                    'Tareas Activas',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: child!,
+              ),
+            ),
+          ),
+        );
+      },
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton.icon(
+              onPressed: () => _showAddTaskDialog(context),
+              icon: const Icon(Icons.add),
+              label: const Text('Agregar Tarea'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orangeAccent,
+                foregroundColor: Colors.black,
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              children: [
+                // Active Tasks Section
+                if (activeTasks.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [Colors.orangeAccent, Colors.deepOrangeAccent],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ).createShader(bounds),
+                      child: const Text(
+                        'Tareas Activas',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white, // Base color for shader
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                ...activeTasks.map((task) => Container(
+                  ...activeTasks.map((task) => Container(
+                    margin: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Colors.orange, Colors.deepOrange],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Card(
+                      color: Colors.transparent,
+                      elevation: 0,
+                      child: ListTile(
+                        leading: const Icon(Icons.task, color: Colors.white, size: 30),
+                        title: ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [Colors.orangeAccent, Colors.white],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(bounds),
+                          child: Text(
+                            task['nombre'] ?? 'Sin nombre',
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              shadows: [Shadow(color: Colors.black, blurRadius: 2)],
+                            ),
+                          ),
+                        ),
+                        subtitle: ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [Colors.white70, Colors.white54],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(bounds),
+                          child: Text(
+                            'Habilidad requerida: ${_getSkillNameById(dataProvider, task['requiredSkill']) ?? 'N/A'}\nPrioridad: ${task['priority'] ?? 'N/A'}\nHoras estimadas: ${task['estimatedHours'] ?? 0}\nFecha inicio: ${task['fechaInicio'] != null ? DateFormat("d 'de' MMMM 'de' y", 'es').format(DateTime.parse(task['fechaInicio'])) : 'N/A'}\nFecha finalización: ${task['fechaFinalizacion'] != null ? DateFormat("d 'de' MMMM 'de' y", 'es').format(DateTime.parse(task['fechaFinalizacion'])) : 'N/A'}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.white),
+                              onPressed: () => _showEditTaskDialog(context, task),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.auto_awesome, color: Colors.white),
+                              onPressed: () => _generateAssignment(context, task['id'].toString()),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.white),
+                              onPressed: () => _showDeleteDialog(context, 'tarea', task['id'] as int, () => dataProvider.deleteTask(task['id'] as int)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAssignmentsTab(DataProvider dataProvider) {
+    // Filter out completed assignments
+    final activeAssignments = dataProvider.assignments.where((assignment) => assignment['estado'] != 'completed').toList();
+
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.black.withOpacity(0.95),
+                Colors.blue.shade900.withOpacity(0.95),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: child!,
+              ),
+            ),
+          ),
+        );
+      },
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CompletedTasksScreen()),
+              ),
+              icon: const Icon(Icons.check_circle),
+              label: const Text('Ver Tareas Completadas'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purpleAccent,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: activeAssignments.length,
+              itemBuilder: (context, index) {
+                final assignment = activeAssignments[index];
+                return Container(
                   margin: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Colors.orange, Colors.deepOrange],
+                      colors: [Colors.purple, Colors.indigo],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -569,131 +847,57 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     color: Colors.transparent,
                     elevation: 0,
                     child: ListTile(
-                      leading: const Icon(Icons.task, color: Colors.white, size: 30),
-                      title: Text(
-                        task['nombre'] ?? 'Sin nombre',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          shadows: [Shadow(color: Colors.black, blurRadius: 2)],
+                      leading: const Icon(Icons.assignment, color: Colors.white, size: 30),
+                        title: ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [Colors.purpleAccent, Colors.white],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(bounds),
+                          child: Text(
+                            'Tarea: ${assignment['task']?['nombre'] ?? 'N/A'}',
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              shadows: [Shadow(color: Colors.black, blurRadius: 2)],
+                            ),
+                          ),
                         ),
-                      ),
-                      subtitle: Text(
-                        'Habilidad requerida: ${_getSkillNameById(dataProvider, task['requiredSkill']) ?? 'N/A'}\nPrioridad: ${task['priority'] ?? 'N/A'}\nHoras estimadas: ${task['estimatedHours'] ?? 0}\nFecha inicio: ${task['fechaInicio'] != null ? DateFormat("d 'de' MMMM 'de' y", 'es').format(DateTime.parse(task['fechaInicio'])) : 'N/A'}\nFecha finalización: ${task['fechaFinalizacion'] != null ? DateFormat("d 'de' MMMM 'de' y", 'es').format(DateTime.parse(task['fechaFinalizacion'])) : 'N/A'}',
-                        style: const TextStyle(color: Colors.white70),
+                      subtitle: ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [Colors.cyanAccent, Colors.white],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ).createShader(bounds),
+                        child: Text(
+                          'Empleado: ${assignment['employee']?['nombre'] ?? 'N/A'}\nEstado: ${assignment['estado'] ?? 'N/A'}\nFecha: ${assignment['fechaAsignacion'] != null ? DateFormat("d 'de' MMMM 'de' y", 'es').format(DateTime.parse(assignment['fechaAsignacion'])) : 'N/A'}',
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.white),
-                            onPressed: () => _showEditTaskDialog(context, task),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.auto_awesome, color: Colors.white),
-                            onPressed: () => _generateAssignment(context, task['id'].toString()),
-                          ),
+                          if (assignment['estado'] != 'completed')
+                            IconButton(
+                              icon: const Icon(Icons.check, color: Colors.white),
+                              onPressed: () => _completeAssignment(context, assignment['id']),
+                              tooltip: 'Marcar como completada',
+                            ),
                           IconButton(
                             icon: const Icon(Icons.delete, color: Colors.white),
-                            onPressed: () => _showDeleteDialog(context, 'tarea', task['id'] as int, () => dataProvider.deleteTask(task['id'] as int)),
+                            onPressed: () => _showDeleteDialog(context, 'asignación', int.tryParse(assignment['id'].toString()) ?? 0, () => dataProvider.deleteAssignment(int.tryParse(assignment['id'].toString()) ?? 0)),
                           ),
                         ],
                       ),
                     ),
                   ),
-                )),
-              ],
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAssignmentsTab(DataProvider dataProvider) {
-    // Filter out completed assignments
-    final activeAssignments = dataProvider.assignments.where((assignment) => assignment['estado'] != 'completed').toList();
-
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ElevatedButton.icon(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const CompletedTasksScreen()),
-            ),
-            icon: const Icon(Icons.check_circle),
-            label: const Text('Ver Tareas Completadas'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.purpleAccent,
-              foregroundColor: Colors.white,
+                );
+              },
             ),
           ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: activeAssignments.length,
-            itemBuilder: (context, index) {
-              final assignment = activeAssignments[index];
-              return Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Colors.purple, Colors.indigo],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Card(
-                  color: Colors.transparent,
-                  elevation: 0,
-                  child: ListTile(
-                    leading: const Icon(Icons.assignment, color: Colors.white, size: 30),
-                    title: Text(
-                      'Tarea: ${assignment['task']?['nombre'] ?? 'N/A'}',
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        shadows: [Shadow(color: Colors.black, blurRadius: 2)],
-                      ),
-                    ),
-                    subtitle: Text(
-                      'Empleado: ${assignment['employee']?['nombre'] ?? 'N/A'}\nEstado: ${assignment['estado'] ?? 'N/A'}\nFecha: ${assignment['fechaAsignacion'] != null ? DateFormat("d 'de' MMMM 'de' y", 'es').format(DateTime.parse(assignment['fechaAsignacion'])) : 'N/A'}',
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (assignment['estado'] != 'completed')
-                          IconButton(
-                            icon: const Icon(Icons.check, color: Colors.white),
-                            onPressed: () => _completeAssignment(context, assignment['id']),
-                            tooltip: 'Marcar como completada',
-                          ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.white),
-                          onPressed: () => _showDeleteDialog(context, 'asignación', int.tryParse(assignment['id'].toString()) ?? 0, () => dataProvider.deleteAssignment(int.tryParse(assignment['id'].toString()) ?? 0)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -728,28 +932,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             _buildLegendItem(Colors.green, 'Tareas Activas'),
           ],
         ),
+        const SizedBox(height: 32), // Separar más la leyenda del gráfico
         SizedBox(
-          height: 140,
+          height: 150,
           child: PieChart(
             PieChartData(
               sections: [
                 PieChartSectionData(
                   value: totalEmployees.toDouble(),
                   color: Colors.blue,
-                  radius: 40,
+                  radius: 50,
                 ),
                 PieChartSectionData(
                   value: totalAssignments.toDouble(),
                   color: Colors.orange,
-                  radius: 40,
+                  radius: 50,
                 ),
                 PieChartSectionData(
                   value: activeTasks.toDouble(),
                   color: Colors.green,
-                  radius: 40,
+                  radius: 50,
                 ),
               ],
-              centerSpaceRadius: 0,
+              centerSpaceRadius: 20,
             ),
           ),
         ),
@@ -757,51 +962,54 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
 
     // Generate productivity chart (mock data for now)
-    final productivityChart = LineChart(
-      LineChartData(
-        lineBarsData: [
-          LineChartBarData(
-            spots: [
-              const FlSpot(0, 5),
-              const FlSpot(1, 7),
-              const FlSpot(2, 6),
-              const FlSpot(3, 8),
-              const FlSpot(4, 9),
-            ],
-            isCurved: true,
-            color: Colors.white,
-            barWidth: 4,
-            belowBarData: BarAreaData(show: false),
-          ),
-        ],
-        titlesData: FlTitlesData(
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                switch (value.toInt()) {
-                  case 0:
-                    return const Text('Lun', style: TextStyle(color: Colors.white));
-                  case 1:
-                    return const Text('Mar', style: TextStyle(color: Colors.white));
-                  case 2:
-                    return const Text('Mié', style: TextStyle(color: Colors.white));
-                  case 3:
-                    return const Text('Jue', style: TextStyle(color: Colors.white));
-                  case 4:
-                    return const Text('Vie', style: TextStyle(color: Colors.white));
-                  default:
-                    return const Text('');
-                }
-              },
+    final productivityChart = SizedBox(
+      height: 120,
+      child: LineChart(
+        LineChartData(
+          lineBarsData: [
+            LineChartBarData(
+              spots: [
+                const FlSpot(0, 5),
+                const FlSpot(1, 7),
+                const FlSpot(2, 6),
+                const FlSpot(3, 8),
+                const FlSpot(4, 9),
+              ],
+              isCurved: true,
+              color: Colors.white,
+              barWidth: 4,
+              belowBarData: BarAreaData(show: false),
             ),
+          ],
+          titlesData: FlTitlesData(
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  switch (value.toInt()) {
+                    case 0:
+                      return const Text('Lun', style: TextStyle(color: Colors.white, fontSize: 12));
+                    case 1:
+                      return const Text('Mar', style: TextStyle(color: Colors.white, fontSize: 12));
+                    case 2:
+                      return const Text('Mié', style: TextStyle(color: Colors.white, fontSize: 12));
+                    case 3:
+                      return const Text('Jue', style: TextStyle(color: Colors.white, fontSize: 12));
+                    case 4:
+                      return const Text('Vie', style: TextStyle(color: Colors.white, fontSize: 12));
+                    default:
+                      return const Text('');
+                  }
+                },
+              ),
+            ),
+            leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           ),
-          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          borderData: FlBorderData(show: false),
+          gridData: FlGridData(show: false),
         ),
-        borderData: FlBorderData(show: false),
-        gridData: FlGridData(show: false),
       ),
     );
 
@@ -813,15 +1021,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       builder: (context, child) {
         return Container(
           decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment.center,
-              radius: 1.5,
+            gradient: LinearGradient(
               colors: [
-                _gradientAnimation.value!,
-                const Color(0xFF1A1A2E),
-                const Color(0xFF16213E),
-                const Color(0xFF0F0F23),
+                Colors.black.withOpacity(0.95),
+                Colors.blue.shade900.withOpacity(0.95),
               ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
           child: FadeTransition(
@@ -841,9 +1047,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Dashboard',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [Colors.cyanAccent, Colors.blueAccent, Colors.purpleAccent],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+              child: const Text(
+                'Dashboard',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white, // Base color for shader
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             GridView.count(
@@ -927,81 +1144,115 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildDashboardCard(String title, String description, List<Widget> stats, 
-    {String? buttonText, VoidCallback? onButtonPressed, Widget? chart, 
-    List<Widget>? alerts, List<Map<String, dynamic>>? recentAssignments, 
+  Widget _buildDashboardCard(String title, String description, List<Widget> stats,
+    {String? buttonText, VoidCallback? onButtonPressed, Widget? chart,
+    List<Widget>? alerts, List<Map<String, dynamic>>? recentAssignments,
     required LinearGradient gradient}) {
-  return Container(
-    decoration: BoxDecoration(
-      gradient: gradient,
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.3),
-          blurRadius: 8,
-          offset: const Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Card(
-      color: Colors.transparent,
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column( // CORRECCIÓN: Este child estaba mal ubicado
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(_getIconForTitle(title), color: Colors.white),
-                const SizedBox(width: 8),
-                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-              ],
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      double chartHeight = constraints.maxWidth * 0.4; // Ajustar altura del chart proporcionalmente al ancho
+      return Container(
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
             ),
-            const SizedBox(height: 8),
-            Text(description, style: const TextStyle(color: Colors.white70)),
-            ... (chart != null ? [
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 160,
-                child: chart,
-              ),
-            ] : []),
-            ... (stats.isNotEmpty ? [
-              const SizedBox(height: 16),
-              ...stats,
-            ] : []),
-            ... (recentAssignments != null && recentAssignments.isNotEmpty ? [
-              const SizedBox(height: 16),
-              const Text("Asignaciones Recientes:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              ...recentAssignments.map((assignment) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Text(
-                  "${assignment['employee']?['nombre'] ?? 'N/A'} - ${assignment['task']?['nombre'] ?? 'N/A'}",
-                  style: const TextStyle(color: Colors.white70),
-                ),
-              )),
-            ] : []),
-            ... (alerts != null && alerts.isNotEmpty ? [
-              const SizedBox(height: 16),
-              ...alerts,
-            ] : []),
-            ... (buttonText != null && onButtonPressed != null ? [
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: onButtonPressed,
-                icon: Icon(_getButtonIcon(buttonText), color: Colors.white),
-                label: Text(buttonText, style: const TextStyle(color: Colors.white)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.24),
-                  foregroundColor: Colors.white,
-                ),
-              ),
-            ] : []),
           ],
         ),
-      ), // CORRECCIÓN: Este paréntesis cierra el Padding correctamente
-    ), // CORRECCIÓN: Este paréntesis cierra el Card correctamente
+        child: Card(
+          color: Colors.transparent,
+          elevation: 0,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(_getIconForTitle(title), color: Colors.white),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ShaderMask(
+                          shaderCallback: (bounds) {
+                            List<Color> titleColors;
+                            if (gradient.colors[0] == Colors.blue) {
+                              titleColors = [Colors.cyanAccent, Colors.white];
+                            } else if (gradient.colors[0] == Colors.purple) {
+                              titleColors = [Colors.purpleAccent, Colors.white];
+                            } else if (gradient.colors[0] == Colors.green) {
+                              titleColors = [Colors.lightGreenAccent, Colors.white];
+                            } else if (gradient.colors[0] == Colors.red) {
+                              titleColors = [Colors.yellowAccent, Colors.white];
+                            } else {
+                              titleColors = [Colors.white, Colors.white70];
+                            }
+                            return LinearGradient(
+                              colors: titleColors,
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ).createShader(bounds);
+                          },
+                          child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [Colors.cyanAccent, Colors.white],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ).createShader(bounds),
+                    child: Text(description, style: const TextStyle(color: Colors.white)),
+                  ),
+                  ... (chart != null ? [
+                    const SizedBox(height: 24), // Separar más la leyenda del gráfico
+                    chart,
+                  ] : []),
+                  ... (stats.isNotEmpty ? [
+                    const SizedBox(height: 16),
+                    ...stats,
+                  ] : []),
+                  ... (recentAssignments != null && recentAssignments.isNotEmpty ? [
+                    const SizedBox(height: 16),
+                    const Text("Asignaciones Recientes:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ...recentAssignments.map((assignment) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        "${assignment['employee']?['nombre'] ?? 'N/A'} - ${assignment['task']?['nombre'] ?? 'N/A'}",
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    )),
+                  ] : []),
+                  ... (alerts != null && alerts.isNotEmpty ? [
+                    const SizedBox(height: 16),
+                    ...alerts,
+                  ] : []),
+                  ... (buttonText != null && onButtonPressed != null ? [
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: onButtonPressed,
+                      icon: Icon(_getButtonIcon(buttonText), color: Colors.white),
+                      label: Text(buttonText, style: const TextStyle(color: Colors.white)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white.withOpacity(0.24),
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ] : []),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    },
   );
 }
 
@@ -1044,9 +1295,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Colors.cyanAccent, Colors.blueAccent],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ).createShader(bounds),
+                child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              ),
               const SizedBox(height: 8),
-              Text(description, style: const TextStyle(color: Colors.white70)),
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Colors.white70, Colors.white54],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ).createShader(bounds),
+                child: Text(description, style: const TextStyle(color: Colors.white)),
+              ),
               const SizedBox(height: 16),
               ElevatedButton.icon(
                 onPressed: onPressed,
@@ -1084,7 +1349,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       elevation: 0,
                       child: Padding(
                         padding: const EdgeInsets.all(8),
-                        child: Text(item, style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold)),
+                        child: ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [Colors.white, Colors.white70],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(bounds),
+                          child: Text(item, style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.bold)),
+                        ),
                       ),
                     ),
                   )).toList(),
@@ -2374,17 +2646,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Row(
       children: [
         Container(
-          width: 12,
-          height: 12,
+          width: 10,
+          height: 10,
           decoration: BoxDecoration(
             color: color,
             shape: BoxShape.circle,
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 6),
         Text(
           label,
-          style: const TextStyle(color: Colors.white, fontSize: 14),
+          style: const TextStyle(color: Colors.white, fontSize: 12),
         ),
       ],
     );

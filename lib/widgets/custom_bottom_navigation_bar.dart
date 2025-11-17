@@ -52,26 +52,26 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.white,
-            Colors.grey.shade300,
+            const Color.fromARGB(255, 0, 24, 61).withOpacity(0.8),
+            const Color.fromARGB(255, 56, 0, 30).withOpacity(0.8),
           ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
         border: Border.all(
-          color: const Color(0xFF00FFFF),
+          color: const Color.fromARGB(255, 173, 3, 189).withOpacity(0.5),
           width: 1,
         ),
         borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00FFFF).withOpacity(0.3),
+            color: const Color.fromARGB(255, 204, 0, 255).withOpacity(0.3),
             spreadRadius: 2,
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withOpacity(0.5),
             spreadRadius: -2,
             blurRadius: 10,
             offset: const Offset(0, 0),
@@ -106,20 +106,38 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  icon,
-                  color: isSelected ? _colorAnimations[index].value : Colors.black.withOpacity(0.6),
-                  size: 24,
+                ShaderMask(
+                  shaderCallback: (bounds) => LinearGradient(
+                    colors: isSelected
+                        ? [Colors.cyanAccent, Colors.white]
+                        : [Colors.white70, Colors.white54],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds),
+                  child: Icon(
+                    icon,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: isSelected ? _colorAnimations[index].value : Colors.black.withOpacity(0.6),
-                    letterSpacing: 0.5,
+                ShaderMask(
+                  shaderCallback: (bounds) => LinearGradient(
+                    colors: isSelected
+                        ? [Colors.cyanAccent, Colors.white]
+                        : [Colors.white70, Colors.white54],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds),
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
               ],
